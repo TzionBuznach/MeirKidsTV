@@ -1,6 +1,6 @@
 phase | duration | app CPU time used | device network | app alive
-A. app open on the home grid (idle) | 60s | app CPU: 0.02 s | device network: 16 KB | app process alive: yes
-B. app in the background | 120s | app CPU: 0.00 s | device network: 23 KB | app process alive: yes
-C. screen off, app was last used | 120s | app CPU: 0.00 s | device network: 96 KB | app process alive: yes
-D. baseline: screen off, app stopped | 120s | app CPU: - | device network: 20 KB | app process alive: no (process ended)
+A. app open on the home grid (idle) | 60s | app CPU: 0.04 s | device network: 16 KB | app process alive: yes
+B. app in the background | 120s | app CPU: 0.00 s | device network: 27 KB | app process alive: yes
+C. screen off, app was last used | 120s | app CPU: 0.01 s | device network: 78523 KB | app process alive: yes
+D. baseline: screen off, app stopped | 120s | app CPU: - | device network: 22 KB | app process alive: no (process ended)
 == wake locks held by the app (should be none):
