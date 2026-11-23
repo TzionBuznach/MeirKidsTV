@@ -75,7 +75,7 @@
     '#mk-layer .mk-btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 34px;border-radius:14px;background:#5b2a9e;border:5px solid transparent}',
     '#mk-layer .mk-pause{font-size:120px;background:rgba(0,0,0,.45);border-radius:50%;width:200px;height:200px;display:flex;align-items:center;justify-content:center}',
     '#mk-toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:2147483200;background:rgba(0,0,0,.85);color:#fff;font:bold 24px Arial,sans-serif;padding:14px 28px;border-radius:12px;direction:rtl;display:none;visibility:visible!important}',
-    '#mk-banner{position:fixed;top:0;left:0;right:0;z-index:2147483200;background:#c0392b;color:#fff;font:bold 20px Arial,sans-serif;padding:10px 20px;text-align:center;direction:rtl}',
+    '#mk-banner{position:fixed;bottom:0;left:0;right:0;z-index:2147483200;background:#c0392b;color:#fff;font:bold 20px Arial,sans-serif;padding:10px 20px;text-align:center;direction:rtl}',
     '.cc-window,.cc-banner{display:none!important}'
   ].join('\n');
 
@@ -217,6 +217,18 @@
       if ((t === 'ניתוק' || t === 'מחובר') && shown(n)) return true;
     }
     return false;
+  }
+
+  // Logged out: put the remote's focus on the site's own login button, so a parent presses OK once.
+  function focusLoginLink() {
+    var nodes = document.querySelectorAll('a,button');
+    for (var i = 0; i < nodes.length; i++) {
+      var t = (nodes[i].textContent || '').trim();
+      if ((t === 'כניסה' || t === 'התחברות' || t === 'התחבר') && shown(nodes[i])) {
+        try { nodes[i].focus(); nodes[i].scrollIntoView({ block: 'center' }); } catch (e) {}
+        return;
+      }
+    }
   }
 
   function parentBanner(msg) {
@@ -610,6 +622,7 @@
       kids = false;
       html.classList.remove('mk-boot');
       parentBanner('צריך להתחבר לחשבון פעם אחת. אחרי ההתחברות האפליקציה תעבור למצב ילדים');
+      focusLoginLink();
       return;
     }
     native('setKidMode', true);
