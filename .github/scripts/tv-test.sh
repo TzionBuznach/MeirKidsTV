@@ -39,12 +39,18 @@ shot 13-series-moved 3
 key 23
 shot 14-episode 30
 shot 14b-episode-later 20
-key 23                       # OK: pause
-shot 14c-paused 3
-key 22                       # right: +10 s
-shot 14d-seek 2
+key 23                       # OK: pause -> control bar opens, focus on play
+shot 14c-paused-bar 3
+key 22                       # right: focus moves to +10 s
+shot 14d-bar-focus 2
+key 23                       # OK on +10 s
+shot 14e-bar-seek 2
+key 4                        # Back closes the bar
 key 23                       # OK: play again
-shot 14e-playing 5
+shot 14f-playing 4
+key 20                       # down: open the bar while playing
+shot 14g-bar-while-playing 2
+key 4
 key 4
 shot 15-back-to-series 25
 key 4

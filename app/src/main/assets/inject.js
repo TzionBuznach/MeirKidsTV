@@ -83,6 +83,19 @@
     '#mk-layer .mk-count{font-size:96px;font-weight:bold;color:#ffd54a;line-height:1.1;margin:6px 0 20px}',
     '#mk-layer .mk-btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 34px;border-radius:14px;background:#5b2a9e;border:5px solid transparent}',
     '#mk-layer .mk-pause{font-size:120px;background:rgba(0,0,0,.45);border-radius:50%;width:200px;height:200px;display:flex;align-items:center;justify-content:center}',
+    '#mk-bar{position:fixed;left:0;right:0;bottom:0;z-index:2147483150;display:none;padding:22px 48px 26px;background:linear-gradient(to top,rgba(10,4,22,.95),rgba(10,4,22,.75) 70%,rgba(10,4,22,0));color:#fff;font-family:Arial,Helvetica,sans-serif}',
+    '#mk-bar.mk-on{display:block}',
+    '#mk-bar .mk-bar-title{direction:rtl;text-align:right;font-size:26px;font-weight:bold;margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+    '#mk-bar .mk-bar-time{direction:ltr;display:flex;align-items:center;gap:16px;font-size:20px;margin-bottom:16px}',
+    '#mk-bar .mk-track{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.25);overflow:hidden}',
+    '#mk-bar .mk-fill{height:100%;width:0;background:#ffd54a}',
+    '#mk-bar .mk-bar-btns{direction:ltr;display:flex;justify-content:center;gap:18px}',
+    '#mk-bar .mk-bbtn{min-width:120px;text-align:center;padding:10px 12px 8px;border-radius:14px;background:rgba(91,42,158,.85);border:4px solid transparent}',
+    '#mk-bar .mk-bicon{font-size:34px;line-height:1.1}',
+    '#mk-bar .mk-blabel{font-size:17px;direction:rtl;margin-top:2px}',
+    '#mk-bar .mk-bbtn.mk-off{opacity:.3}',
+    '#mk-bar .mk-bbtn.mk-focus{border-color:#ffd54a;transform:scale(1.08)}',
+    'html.mk-player #mk-bar,html.mk-player #mk-bar *{visibility:visible!important}',
     '#mk-toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:2147483200;background:rgba(0,0,0,.85);color:#fff;font:bold 24px Arial,sans-serif;padding:14px 28px;border-radius:12px;direction:rtl;display:none;visibility:visible!important}',
     '#mk-root.mk-center{display:flex;align-items:center;justify-content:center}',
     '#mk-root .mk-login{text-align:center;max-width:760px;padding:20px}',
@@ -518,46 +531,85 @@
   }
 
   // ---------- SERIES: grid of episodes ----------
+  // Episodes of this series from a page (the live series page, or one fetched in the background).
+  // Uses the site's episode cards when present, otherwise any link whose address is an episode
+  // of this series, so a redesign of the cards does not break the list.
+  function parseEpisodes(root) {
+    var items = root.querySelectorAll('.sets-page-video-item');
+    var cards = [];
+    if (items.length) {
+      Array.prototype.forEach.call(items, function (item) { cards.push({ item: item, a: item.querySelector('a[href$="/v"]') }); });
+    } else {
+      Array.prototype.forEach.call(root.querySelectorAll('a[href]'), function (a) {
+        var sg = pathOf(a.getAttribute('href')).split('/').filter(Boolean);
+        if (sg.length === 4 && sg[0] === seriesSlug && sg[3] === 'v' && /^\d+$/.test(sg[2])) {
+          cards.push({ item: (a.closest && a.closest('div,li')) || a, a: a });
+        }
+      });
+    }
+    var eps = [], seen = {};
+    cards.forEach(function (c, idx) {
+      var a = c.a, item = c.item;
+      if (!a) return;
+      var p = pathOf(a.getAttribute('href'));
+      var sg = p.split('/').filter(Boolean);
+      if (sg.length !== 4 || seen[sg[2]]) return;
+      seen[sg[2]] = 1;
+      // textContent, not innerText: the page is still hidden while we read it.
+      var meta = '', name = '';
+      Array.prototype.forEach.call(item.querySelectorAll('*'), function (n) {
+        if (n.children.length) return;
+        var t = (n.textContent || '').trim().replace(/\s+/g, ' ');
+        if (!t) return;
+        if (t.indexOf('›') >= 0) { if (!meta) meta = t; }
+        else if (!name && t.length > 1 && !/^[\d,.\s]+$/.test(t) && t !== 'צפיות') name = t;
+      });
+      if (!meta) meta = (item.textContent || '').replace(/\s+/g, ' ');
+      var season = (meta.match(/עונה\s*(\d+)/) || [])[1];
+      var epNo = (meta.match(/פרק\s*(\d+)/) || [])[1];
+      eps.push({
+        id: sg[2], href: new URL(a.getAttribute('href'), location.href).href,
+        name: name || sg[1].replace(/-/g, ' ').replace(seriesSlug.replace(/-/g, ' '), '').replace(/^\s+/, ''),
+        season: season ? +season : 0, ep: epNo ? +epNo : 0, order: idx,
+        img: imageIn(item)
+      });
+    });
+    // The site lists newest first. For kids, oldest first by season reads naturally.
+    eps.sort(function (a, b) {
+      if (a.season !== b.season) return a.season - b.season;
+      if (a.ep !== b.ep) return a.ep - b.ep;
+      return b.order - a.order;
+    });
+    return eps;
+  }
+
+  // The episode order is kept for the player: previous / next episode are computed from it.
+  function saveList(eps) {
+    sess('mkList:' + seriesSlug, JSON.stringify(eps.map(function (e) {
+      return { id: e.id, href: e.href, name: e.name, season: e.season, ep: e.ep };
+    })));
+  }
+  function getList(cb) {
+    var list = null;
+    try { list = JSON.parse(sess('mkList:' + seriesSlug) || 'null'); } catch (e) { list = null; }
+    if (list && list.length && (type !== 'episode' || list.some(function (e) { return e.id === segs[2]; }))) { cb(list); return; }
+    fetch(seriesUrl, { credentials: 'include' })
+      .then(function (r) { return r.text(); })
+      .then(function (txt) {
+        var eps = parseEpisodes(new DOMParser().parseFromString(txt, 'text/html'));
+        if (eps.length) saveList(eps);
+        cb(eps);
+      })
+      .catch(function () { cb([]); });
+  }
+
   function initSeries() {
     waitFor(function () {
-      var items = document.querySelectorAll('.sets-page-video-item');
-      return items.length ? items : null;
-    }, 6000, function (items) {
-      if (!items) { initFallback(); return; }
-      var eps = [], seen = {};
-      Array.prototype.forEach.call(items, function (item, idx) {
-        var a = item.querySelector('a[href$="/v"]');
-        if (!a) return;
-        var p = pathOf(a.getAttribute('href'));
-        var s = p.split('/').filter(Boolean);
-        if (s.length !== 4 || seen[p]) return;
-        seen[p] = 1;
-        // textContent, not innerText: the page is still hidden while we read it.
-        var meta = '', name = '';
-        Array.prototype.forEach.call(item.querySelectorAll('*'), function (n) {
-          if (n.children.length) return;
-          var t = (n.textContent || '').trim().replace(/\s+/g, ' ');
-          if (!t) return;
-          if (t.indexOf('›') >= 0) { if (!meta) meta = t; }
-          else if (!name && t.length > 1 && !/^[\d,.\s]+$/.test(t) && t !== 'צפיות') name = t;
-        });
-        if (!meta) meta = (item.textContent || '').replace(/\s+/g, ' ');
-        var season = (meta.match(/עונה\s*(\d+)/) || [])[1];
-        var epNo = (meta.match(/פרק\s*(\d+)/) || [])[1];
-        eps.push({
-          id: s[2], href: new URL(a.getAttribute('href'), location.href).href,
-          name: name || s[1].replace(/-/g, ' '),
-          season: season ? +season : 0, ep: epNo ? +epNo : 0, order: idx,
-          img: imageIn(item)
-        });
-      });
-      if (!eps.length) { initFallback(); return; }
-      // The site lists newest first. For kids, oldest first by season reads naturally.
-      eps.sort(function (a, b) {
-        if (a.season !== b.season) return a.season - b.season;
-        if (a.ep !== b.ep) return a.ep - b.ep;
-        return b.order - a.order;
-      });
+      var eps = parseEpisodes(document);
+      return eps.length ? eps : null;
+    }, 6000, function (eps) {
+      if (!eps) { initFallback(); return; }
+      saveList(eps);
       var title = (document.title || '').split('|')[0].trim() || seriesSlug.replace(/-/g, ' ');
       var grid = buildRoot(title);
       var watched = watchedOf(seriesSlug);
@@ -606,6 +658,15 @@
     var ended = false;
     var progress = 0;
     var startedAt = Date.now();
+    var bar = null;
+    var episodes = [], idx = -1;
+    getList(function (list) {
+      episodes = list || [];
+      for (var i = 0; i < episodes.length; i++) if (episodes[i].id === epId) idx = i;
+      log('episode list ' + episodes.length + ' index=' + idx);
+      if (bar) bar.refreshTitle();
+    });
+    function neighbour(d) { return (idx >= 0 && episodes[idx + d]) ? episodes[idx + d] : null; }
 
     html.classList.add('mk-player', 'mk-loading');
     html.classList.remove('mk-boot');
@@ -629,6 +690,8 @@
           });
         },
         on: function (ev, fn) { player.on(ev, fn); },
+        time: function () { return Promise.all([player.getCurrentTime(), player.getDuration()]); },
+        hideControls: function () {},
         watchRemoval: true
       };
     }
@@ -655,7 +718,9 @@
           else if (ev === 'timeupdate') p.on('time', function (d) { fn({ percent: d && d.duration ? d.position / d.duration : 0 }); });
           else p.on(ev, fn);
         },
-        state: function () { try { return p.getState(); } catch (e) { return '?'; } }
+        state: function () { try { return p.getState(); } catch (e) { return '?'; } },
+        time: function () { return Promise.resolve([p.getPosition() || 0, p.getDuration() || 0]); },
+        hideControls: function () { try { p.setControls(false); } catch (e) {} }
       };
     }
 
@@ -672,7 +737,9 @@
         on: function (ev, fn) {
           if (ev === 'timeupdate') v.addEventListener('timeupdate', function () { fn({ percent: v.duration ? v.currentTime / v.duration : 0 }); });
           else v.addEventListener(ev, fn);
-        }
+        },
+        time: function () { return Promise.resolve([v.currentTime || 0, v.duration || 0]); },
+        hideControls: function () { v.controls = false; }
       };
     }
 
@@ -700,9 +767,11 @@
 
     function wirePlayer(p) {
       p.fsEl.classList.add('mk-fs');
-      p.on('play', function () { html.classList.remove('mk-loading'); native('setKeepScreenOn', true); showLayer(null); });
+      if (p.hideControls) p.hideControls();
+      bar = makeBar(p);
+      p.on('play', function () { html.classList.remove('mk-loading'); native('setKeepScreenOn', true); showLayer(null); bar.playing(true); });
       p.on('timeupdate', function () { html.classList.remove('mk-loading'); });
-      p.on('pause', function () { native('setKeepScreenOn', false); });
+      p.on('pause', function () { native('setKeepScreenOn', false); bar.playing(false); });
       p.on('ended', function () { onEnded(); });
       p.on('timeupdate', function (d) {
         if (d && typeof d.percent === 'number') progress = d.percent;
@@ -723,75 +792,195 @@
           else setTimeout(function () {
             if (ended) return;
             var again = vimeoAdapter();
-            if (again) { log('player replaced, rewiring'); wirePlayer(again); }
+            if (again) { log('player replaced, rewiring'); bar.remove(); wirePlayer(again); }
           }, 1000);
         });
         mo.observe(document.body, { childList: true, subtree: true });
       }
 
+      // Without the bar: OK = pause/play, left/right = 10 s, up/down = open the bar.
       handlers.enter = function () {
         p.paused().then(function (isPaused) {
-          if (isPaused) { p.play(); showLayer(null); }
-          else {
-            p.pause();
-            showLayer(el('div', 'mk-pause', '❚❚'));
-          }
+          if (isPaused) { p.play(); bar.hide(); }
+          else { p.pause(); bar.open(); }
         });
       };
       handlers.arrow = function (k) {
-        if (k === 'left') { p.seekBy(-SEEK_SEC); toast('⏪ ' + SEEK_SEC + ' שניות', 1000); }
-        else if (k === 'right') { p.seekBy(SEEK_SEC); toast(SEEK_SEC + ' שניות ⏩', 1000); }
+        if (k === 'left') { p.seekBy(-SEEK_SEC); bar.peek(); }
+        else if (k === 'right') { p.seekBy(SEEK_SEC); bar.peek(); }
+        else bar.open();
       };
+    }
+
+    // ---- the control bar: one look and one set of buttons for every player on the site ----
+    function fmt(t) {
+      t = Math.max(0, Math.floor(t || 0));
+      var h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), sec = t % 60;
+      var mm = (h ? (m < 10 ? '0' : '') : '') + m, ss = (sec < 10 ? '0' : '') + sec;
+      return (h ? h + ':' : '') + mm + ':' + ss;
+    }
+    function makeBar(p) {
+      var root = el('div'); root.id = 'mk-bar';
+      var title = el('div', 'mk-bar-title');
+      var timeRow = el('div', 'mk-bar-time');
+      var cur = el('span', null, '0:00'), dur = el('span', null, '0:00');
+      var track = el('div', 'mk-track'), fill = el('div', 'mk-fill');
+      track.appendChild(fill);
+      timeRow.appendChild(cur); timeRow.appendChild(track); timeRow.appendChild(dur);
+      var btnRow = el('div', 'mk-bar-btns');
+      function button(icon, label, action) {
+        var b = el('div', 'mk-bbtn');
+        b.appendChild(el('div', 'mk-bicon', icon));
+        b.appendChild(el('div', 'mk-blabel', label));
+        b.mkAction = action;
+        btnRow.appendChild(b);
+        return b;
+      }
+      // Left to right like the timeline: back in time on the left, forward on the right.
+      var bPrev = button('⏮', 'פרק קודם', function () { toEpisode(-1); });
+      var bBack = button('⏪', '10 שניות', function () { p.seekBy(-SEEK_SEC); refresh(); });
+      var bPlay = button('❚❚', 'עצירה', function () {
+        p.paused().then(function (isPaused) { if (isPaused) { p.play(); scheduleHide(); } else { p.pause(); } });
+      });
+      var bFwd = button('⏩', '10 שניות', function () { p.seekBy(SEEK_SEC); refresh(); });
+      var bNext = button('⏭', 'פרק הבא', function () { toEpisode(1); });
+      var bList = button('☰', 'רשימת פרקים', function () { go(seriesUrl); });
+      var buttons = [bPrev, bBack, bPlay, bFwd, bNext, bList];
+      root.appendChild(title); root.appendChild(timeRow); root.appendChild(btnRow);
+      document.body.appendChild(root);
+
+      var focusIdx = 2, mode = 'hidden', hideTimer = null, tick = null, isPlaying = true;
+      function setBtnFocus(i) {
+        buttons.forEach(function (b, j) { b.classList.toggle('mk-focus', j === i && mode === 'open'); });
+        focusIdx = i;
+      }
+      function enabledNeighbours() {
+        bPrev.classList.toggle('mk-off', !neighbour(-1));
+        bNext.classList.toggle('mk-off', !neighbour(1));
+      }
+      function refreshTitle() {
+        var e = idx >= 0 ? episodes[idx] : null;
+        var parts = [];
+        if (e) { parts.push(e.name); if (e.season) parts.push('עונה ' + e.season); if (e.ep) parts.push('פרק ' + e.ep); }
+        title.textContent = parts.join(' · ') || (document.title || '').split(' - ')[0];
+        enabledNeighbours();
+      }
+      function refresh() {
+        p.time().then(function (v) {
+          cur.textContent = fmt(v[0]); dur.textContent = fmt(v[1]);
+          fill.style.width = (v[1] ? Math.min(100, 100 * v[0] / v[1]) : 0) + '%';
+        }, function () {});
+      }
+      function show(m) {
+        mode = m;
+        root.classList.add('mk-on');
+        setBtnFocus(focusIdx);
+        refreshTitle();
+        refresh();
+        clearInterval(tick);
+        tick = setInterval(refresh, 500);
+        layerActive = m === 'open' ? controller : null;
+      }
+      function hide() {
+        mode = 'hidden';
+        root.classList.remove('mk-on');
+        clearInterval(tick); clearTimeout(hideTimer);
+        if (layerActive === controller) layerActive = null;
+        showLayer(null);
+      }
+      function scheduleHide(ms) {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () { if (isPlaying) hide(); }, ms || 5000);
+      }
+      var controller = {
+        key: function (k) {
+          scheduleHide();
+          if (k === 'left' || k === 'right') {
+            var d = k === 'right' ? 1 : -1, i = focusIdx;
+            do { i += d; } while (buttons[i] && buttons[i].classList.contains('mk-off'));
+            if (buttons[i]) setBtnFocus(i);
+          } else if (k === 'up') { hide(); }
+          else if (k === 'enter') { var b = buttons[focusIdx]; if (b && !b.classList.contains('mk-off')) b.mkAction(); }
+          else if (k === 'playpause') { bPlay.mkAction(); }
+        },
+        back: function () { hide(); }
+      };
+      return {
+        open: function () { focusIdx = 2; show('open'); scheduleHide(); },
+        peek: function () { if (mode !== 'open') { show('peek'); scheduleHide(2500); } else refresh(); },
+        hide: hide,
+        remove: function () { hide(); if (root.parentNode) root.parentNode.removeChild(root); },
+        refreshTitle: refreshTitle,
+        playing: function (on) {
+          isPlaying = on;
+          bPlay.querySelector('.mk-bicon').textContent = on ? '❚❚' : '▶';
+          bPlay.querySelector('.mk-blabel').textContent = on ? 'עצירה' : 'המשך';
+          if (on) { if (mode !== 'hidden') scheduleHide(); }
+          else if (!ended) { if (mode !== 'open') show('open'); clearTimeout(hideTimer); }
+        }
+      };
+    }
+
+    // Previous / next from the bar: the kid's own choice, so the automatic counter starts over.
+    function toEpisode(d) {
+      var e = neighbour(d);
+      if (!e) return;
+      sess('mkAuto', '0');
+      go(e.href);
     }
 
     function onEnded() {
       if (ended) return;
       ended = true;
       html.classList.remove('mk-loading');
+      if (bar) bar.hide();
       log('episode ended');
       native('setKeepScreenOn', false);
       markWatched(seriesSlug, epId);
       handlers.enter = null;
       handlers.arrow = null;
       var auto = parseInt(sess('mkAuto') || '0', 10) || 0;
+      // Next episode from our own list; the site's own "next" button only as a fallback.
+      var nextEp = neighbour(1);
+      var siteNext = document.querySelector('.continue-capsule__next');
+      var hasNext = !!(nextEp || siteNext);
+      var back = function () { go(seriesUrl); };
 
-      // The site shows its own "next episode" button a moment after the end.
-      waitFor(function () { return document.querySelector('.continue-capsule__next'); }, 2000, function (nextBtn) {
-        if (!nextBtn || auto >= AUTO_LIMIT) {
-          var card = el('div', 'mk-card');
-          card.appendChild(el('div', 'mk-big', nextBtn ? 'זהו להפעם!' : 'זה היה הפרק האחרון'));
-          card.appendChild(el('div', 'mk-big', 'חוזרים לרשימת הפרקים...'));
-          showLayer(card);
-          var back = function () { go(seriesUrl); };
-          layerActive = { key: function (k) { if (k === 'enter') back(); }, back: back };
-          setTimeout(back, 3500);
-          return;
+      if (!hasNext || auto >= AUTO_LIMIT) {
+        var card = el('div', 'mk-card');
+        card.appendChild(el('div', 'mk-big', hasNext ? 'זהו להפעם!' : 'זה היה הפרק האחרון'));
+        card.appendChild(el('div', 'mk-big', 'חוזרים לרשימת הפרקים...'));
+        showLayer(card);
+        layerActive = { key: function (k) { if (k === 'enter') back(); }, back: back };
+        setTimeout(back, 3500);
+        return;
+      }
+      var left = COUNTDOWN_SEC;
+      var card2 = el('div', 'mk-card');
+      card2.appendChild(el('div', 'mk-big', 'הפרק הבא מתחיל בעוד'));
+      var count = el('div', 'mk-count', String(left));
+      card2.appendChild(count);
+      if (nextEp && nextEp.name) card2.appendChild(el('div', 'mk-big', nextEp.name));
+      var btn = el('div', 'mk-btn mk-focus', 'חזרה לרשימת הפרקים');
+      card2.appendChild(btn);
+      showLayer(card2);
+      var timer = setInterval(function () {
+        left--;
+        count.textContent = String(Math.max(left, 0));
+        if (left <= 0) {
+          clearInterval(timer);
+          sess('mkAuto', String(auto + 1));
+          layerActive = null;
+          log('auto next, count=' + (auto + 1));
+          if (nextEp) { go(nextEp.href); return; }
+          html.classList.add('mk-loading');
+          siteNext.click();
+          // If the click did not navigate, go back to the list rather than sit on a black screen.
+          setTimeout(back, 6000);
         }
-        var left = COUNTDOWN_SEC;
-        var card2 = el('div', 'mk-card');
-        card2.appendChild(el('div', 'mk-big', 'הפרק הבא מתחיל בעוד'));
-        var count = el('div', 'mk-count', String(left));
-        card2.appendChild(count);
-        var btn = el('div', 'mk-btn mk-focus', 'חזרה לרשימת הפרקים');
-        card2.appendChild(btn);
-        showLayer(card2);
-        var timer = setInterval(function () {
-          left--;
-          count.textContent = String(Math.max(left, 0));
-          if (left <= 0) {
-            clearInterval(timer);
-            sess('mkAuto', String(auto + 1));
-            layerActive = null;
-            log('auto next, count=' + (auto + 1));
-            html.classList.add('mk-loading');
-            nextBtn.click();
-            // If the click did not navigate, go back to the list rather than sit on a black screen.
-            setTimeout(function () { go(seriesUrl); }, 6000);
-          }
-        }, 1000);
-        var toList = function () { clearInterval(timer); go(seriesUrl); };
-        layerActive = { key: function (k) { if (k === 'enter') toList(); }, back: toList };
-      });
+      }, 1000);
+      var toList = function () { clearInterval(timer); back(); };
+      layerActive = { key: function (k) { if (k === 'enter') toList(); }, back: toList };
     }
   }
 
