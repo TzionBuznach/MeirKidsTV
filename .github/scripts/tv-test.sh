@@ -4,45 +4,47 @@ set -x
 mkdir -p shots
 APK=$(ls apk/*.apk | head -1)
 shot() { sleep "${2:-3}"; adb exec-out screencap -p > "shots/$1.png"; }
-key() { adb shell input keyevent "$1"; sleep 0.6; }
+key() { adb shell input keyevent "$@"; sleep 0.6; }
+PKG=il.tzion.meirkidstv
 
 adb shell wm size
 adb shell wm density
-adb shell dumpsys package com.google.android.webview | grep -m1 versionName
-adb shell dumpsys package com.android.webview | grep -m1 versionName
 adb install -r "$APK"
 adb logcat -c
-adb shell am start -n il.tzion.meirkidstv/.MainActivity
-shot 01-first-launch 30
 
-# Not logged in in the emulator: expect the plain site with the login banner.
-# Switch to kid mode with the parent sequence: up up down down OK.
-key 19; key 19; key 20; key 20; key 23
-shot 02-after-sequence 25
+# 1) Logged out (the emulator has no account): expect our login screen.
+adb shell am start -n $PKG/.MainActivity
+shot 01-logged-out 35
+key 23                       # OK -> login page
+shot 02-login-page 20
+key 4                        # Back -> home, login screen again
+shot 03-back-from-login 25
 
-# Home grid: move right, right, down.
+# 2) Parent mode sequence (sent fast, as a person would): up up down down OK
+key 19 19 20 20 23
+shot 04-parent-mode 25
+key 19 19 20 20 23           # and back to automatic (logged out -> login screen)
+shot 05-back-to-auto 25
+
+# 3) Kid mode without an account (test hook), to check the grids and keys.
+adb shell am force-stop $PKG
+adb shell am start -n $PKG/.MainActivity --ez mk_force_kids true
+shot 10-home-grid 40
 key 22; key 22; key 20
-shot 03-home-moved 3
-key 21
+shot 11-home-moved 3
 key 23
-shot 04-series 25
+shot 12-series 30
 key 20; key 20; key 22
-shot 05-series-moved 3
-
-# Open an episode (no subscription here, so it will not play; checks the screen does not break).
+shot 13-series-moved 3
 key 23
-shot 06-episode 25
-
-# Back: episode -> series -> home.
+shot 14-episode 30
 key 4
-shot 07-back-to-series 20
+shot 15-back-to-series 25
 key 4
-shot 08-back-to-home 20
-
-# Parent mode again with the sequence, then back to kids.
-key 19; key 19; key 20; key 20; key 23
-shot 09-parent-mode 15
+shot 16-back-to-home 25
+key 4
+shot 17-exit 5
 
 adb logcat -d > shots/logcat-full.txt
-grep -E " MKTV|FATAL EXCEPTION|il.tzion" shots/logcat-full.txt > shots/logcat-mk.txt || true
+grep -E " MKTV|FATAL EXCEPTION" shots/logcat-full.txt > shots/logcat-mk.txt || true
 cat shots/logcat-mk.txt

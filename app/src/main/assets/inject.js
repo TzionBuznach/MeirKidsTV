@@ -16,6 +16,7 @@
 (function () {
   'use strict';
   if (window.__mk) return;
+  if (location.hostname !== 'meirkids.co.il') return; // e.g. the login site: leave it alone
   var MK = (window.__mk = {});
 
   var AUTO_LIMIT = 4;          // automatic episodes after the one the kid picked
@@ -45,7 +46,7 @@
   var seriesUrl = '/' + seriesSlug + '/v';
 
   // mode: 'parent' | 'kids' | null (automatic: kids, unless the site says we are logged out)
-  var forcedMode = store('mkMode');
+  var forcedMode = window.__mkForceKids ? 'kids' : store('mkMode'); // __mkForceKids: emulator test hook
   var kids = forcedMode !== 'parent';
 
   // ---------- styles ----------
@@ -77,6 +78,11 @@
     '#mk-layer .mk-btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 34px;border-radius:14px;background:#5b2a9e;border:5px solid transparent}',
     '#mk-layer .mk-pause{font-size:120px;background:rgba(0,0,0,.45);border-radius:50%;width:200px;height:200px;display:flex;align-items:center;justify-content:center}',
     '#mk-toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:2147483200;background:rgba(0,0,0,.85);color:#fff;font:bold 24px Arial,sans-serif;padding:14px 28px;border-radius:12px;direction:rtl;display:none;visibility:visible!important}',
+    '#mk-root.mk-center{display:flex;align-items:center;justify-content:center}',
+    '#mk-root .mk-login{text-align:center;max-width:760px;padding:20px}',
+    '#mk-root .mk-login h1{font-size:40px;color:#ffd54a;margin:0 0 14px}',
+    '#mk-root .mk-login p{font-size:24px;line-height:1.5;opacity:.9;margin:0 0 30px}',
+    '#mk-root .mk-login .mk-btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 36px;border-radius:14px;background:#5b2a9e;border:5px solid transparent}',
     '#mk-banner{position:fixed;bottom:0;left:0;right:0;z-index:2147483200;background:#c0392b;color:#fff;font:bold 20px Arial,sans-serif;padding:10px 20px;text-align:center;direction:rtl}',
     '.cc-window,.cc-banner{display:none!important}'
   ].join('\n');
@@ -197,14 +203,14 @@
 
   function toggleParentMode() {
     if (kids) { store('mkMode', 'parent'); toast('מצב הורים: האתר הרגיל'); }
-    else { store('mkMode', 'kids'); toast('מצב ילדים'); }
+    else { store('mkMode', null); toast('מצב ילדים'); }
     setTimeout(function () { location.reload(); }, 800);
   }
 
   // Called by the app when Back is pressed. Returns 'handled', 'exit' or 'none'.
   MK.back = function () {
     if (!kids) return 'none';
-    if (layerActive && layerActive.back) { layerActive.back(); return 'handled'; }
+    if (layerActive && layerActive.back) { return layerActive.back() === 'exit' ? 'exit' : 'handled'; }
     if (type === 'home') return 'exit';
     if (type === 'episode') { location.href = seriesUrl; return 'handled'; }
     location.href = '/';
@@ -221,6 +227,27 @@
       if ((t === 'ניתוק' || t === 'מחובר') && shown(n)) return true;
     }
     return false;
+  }
+
+  // Logged out: our own screen with one button to the login page. The site's own login button is
+  // hidden in a menu at TV width, so we do not rely on it.
+  var LOGIN_URL = 'https://join.meirkids.co.il/login.php';
+  function showLoginScreen() {
+    var root = el('div', 'mk-center');
+    root.id = 'mk-root';
+    var box = el('div', 'mk-login');
+    box.appendChild(el('h1', null, 'צריך להתחבר לחשבון'));
+    box.appendChild(el('p', null, 'פעם אחת בלבד, על ידי הורה. אחרי ההתחברות לוחצים על "חזור" בשלט, והאפליקציה עוברת למצב ילדים.'));
+    box.appendChild(el('div', 'mk-btn mk-focus', 'לחצו OK למעבר להתחברות'));
+    root.appendChild(box);
+    document.body.appendChild(root);
+    html.classList.add('mk-overlay');
+    html.classList.remove('mk-boot');
+    layerActive = {
+      key: function (k) { if (k === 'enter') location.href = LOGIN_URL; },
+      back: function () { return 'exit'; }
+    };
+    log('login screen');
   }
 
   // Logged out: put the remote's focus on the site's own login button, so a parent presses OK once.
@@ -624,15 +651,11 @@
       parentBanner('מצב הורים. כדי לחזור למצב ילדים: למעלה, למעלה, למטה, למטה, OK');
       return;
     }
+    native('setKidMode', true);
     if ((type === 'home' || type === 'series') && forcedMode !== 'kids' && !loggedIn()) {
-      // Logged out: show the plain site so a parent can log in once.
-      kids = false;
-      html.classList.remove('mk-boot');
-      parentBanner('צריך להתחבר לחשבון פעם אחת. אחרי ההתחברות האפליקציה תעבור למצב ילדים');
-      focusLoginLink();
+      showLoginScreen();
       return;
     }
-    native('setKidMode', true);
     if (type === 'home') initHome();
     else if (type === 'series') initSeries();
     else if (type === 'episode') initEpisode();

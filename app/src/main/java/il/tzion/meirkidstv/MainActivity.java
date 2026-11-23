@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
     private volatile boolean kidMode = false;
     // Parent mode is switched with a key sequence a kid will not hit by accident: up up down down OK.
     private static final String[] PARENT_SEQUENCE = {"up", "up", "down", "down"};
-    private static final long SEQUENCE_WINDOW_MS = 4000;
+    private static final long SEQUENCE_WINDOW_MS = 6000;
     private final String[] recentKeys = new String[4];
     private final long[] recentTimes = new long[4];
     private boolean sequenceEnterPending = false;
@@ -70,6 +70,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         injectJs = readAsset("inject.js");
+        if (getIntent() != null && getIntent().getBooleanExtra("mk_force_kids", false)) {
+            // Test hook for the emulator, which has no subscription: kid mode without logging in.
+            injectJs = "window.__mkForceKids=true;" + injectJs;
+        }
 
         root = new FrameLayout(this);
         root.setBackgroundColor(Color.parseColor("#1b0b2e"));
@@ -130,14 +134,25 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public void onPageCommitVisible(WebView view, String url) {
+                super.onPageCommitVisible(view, url);
+                // Older WebViews without document-start scripts: inject as soon as the page shows.
+                injectFallback(view, url);
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 Log.i(TAG, "page finished " + url + " docStartScript=" + documentStartScriptInstalled);
-                // Fallback for older WebView versions; inject.js guards against running twice.
-                if (!documentStartScriptInstalled && url != null && url.contains("meirkids.co.il")) {
+                injectFallback(view, url); // inject.js guards against running twice
+                CookieManager.getInstance().flush();
+            }
+
+            private void injectFallback(WebView view, String url) {
+                if (documentStartScriptInstalled || url == null) return;
+                if ("meirkids.co.il".equals(Uri.parse(url).getHost())) {
                     view.evaluateJavascript(injectJs, null);
                 }
-                CookieManager.getInstance().flush();
             }
 
             @Override
