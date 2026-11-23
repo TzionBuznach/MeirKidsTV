@@ -16,62 +16,71 @@ Stats Providers:
   BpfCoordinator Uid:
     NetworkStats: elapsedRealtime=0
 Dev stats:
-  Pending bytes: 7412
+  Pending bytes: 12430
   History since boot:
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=-1 set=ALL tag=0x0
     NetworkStatsHistory: bucketDuration=3600
-      st=1795456800 rb=363 rp=4 tb=339 tp=6 op=0
+      st=1795460400 rb=4781 rp=18 tb=1917 tp=18 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=-1 set=ALL tag=0x0
     NetworkStatsHistory: bucketDuration=3600
-      st=1795456800 rb=4388 rp=15 tb=2322 tp=19 op=0
+      st=1795460400 rb=2974 rp=17 tb=2758 tp=21 op=0
 Xt stats:
-  Pending bytes: 7412
+  Pending bytes: 12430
   History since boot:
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=-1 set=ALL tag=0x0
     NetworkStatsHistory: bucketDuration=3600
-      st=1795456800 rb=363 rp=4 tb=339 tp=6 op=0
+      st=1795460400 rb=4781 rp=18 tb=1917 tp=18 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=-1 set=ALL tag=0x0
     NetworkStatsHistory: bucketDuration=3600
-      st=1795456800 rb=4388 rp=15 tb=2322 tp=19 op=0
+      st=1795460400 rb=2974 rp=17 tb=2758 tp=21 op=0
 UID stats:
-  Pending bytes: 7738
+  Pending bytes: 11690
   History since boot:
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=0 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795456800 rb=0 rp=0 tb=76 tp=1 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1051 set=DEFAULT tag=0x0
     NetworkStatsHistory: bucketDuration=7200
       st=1795456800 rb=40 rp=1 tb=64 tp=1 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1073 set=FOREGROUND tag=0x0
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=323 rp=3 tb=235 tp=4 op=0
+      st=1795456800 rb=4661 rp=15 tb=1737 tp=15 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=0 set=DEFAULT tag=0x0
     NetworkStatsHistory: bucketDuration=7200
       st=1795456800 rb=0 rp=0 tb=392 tp=5 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1000 set=DEFAULT tag=0x0
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=202 rp=2 tb=138 tp=2 op=0
+      st=1795456800 rb=266 rp=2 tb=138 tp=2 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1020 set=DEFAULT tag=0x0
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=1660 rp=8 tb=354 tp=2 op=0
+      st=1795456800 rb=3320 rp=16 tb=708 tp=4 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1051 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795456800 rb=40 rp=1 tb=64 tp=1 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1073 set=FOREGROUND tag=0x0
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=3246 rp=8 tb=1084 tp=8 op=0
+      st=1795456800 rb=80 rp=2 tb=104 tp=2 op=0
 UID tag stats:
-  Pending bytes: 5332
+  Pending bytes: 7194
   History since boot:
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1051 set=DEFAULT tag=0xffffff82
     NetworkStatsHistory: bucketDuration=7200
       st=1795456800 rb=40 rp=1 tb=64 tp=1 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1073 set=FOREGROUND tag=0xffffff81
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=44 rp=1 tb=100 tp=2 op=0
+      st=1795456800 rb=4241 rp=13 tb=1602 tp=13 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1073 set=FOREGROUND tag=0xffffff82
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=279 rp=2 tb=135 tp=2 op=0
+      st=1795456800 rb=420 rp=2 tb=135 tp=2 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1000 set=DEFAULT tag=0xffffff41
     NetworkStatsHistory: bucketDuration=7200
       st=1795456800 rb=76 rp=1 tb=76 tp=1 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1000 set=DEFAULT tag=0xffffff82
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=126 rp=1 tb=62 tp=1 op=0
+      st=1795456800 rb=190 rp=1 tb=62 tp=1 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1051 set=DEFAULT tag=0xffffff82
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795456800 rb=40 rp=1 tb=64 tp=1 op=0
   ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1073 set=FOREGROUND tag=0xffffff81
     NetworkStatsHistory: bucketDuration=7200
-      st=1795456800 rb=3246 rp=8 tb=1084 tp=8 op=0
+      st=1795456800 rb=80 rp=2 tb=104 tp=2 op=0

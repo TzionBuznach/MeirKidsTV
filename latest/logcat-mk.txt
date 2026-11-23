@@ -1,131 +1,132 @@
-11-23 18:26:19.258  2948  2948 I MKTV    : page started https://meirkids.co.il/
-11-23 18:26:20.462  2948  2948 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
-11-23 18:26:25.358  2948  2948 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
-11-23 18:26:25.358  2948  2948 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
-11-23 18:26:25.358  2948  2948 I MKTV    : console [MK] login state out {"connectedText":false,"logoutLink":false,"loginLink":true}
-11-23 18:26:25.373  2948  2948 I MKTV    : console [MK] login screen {"connectedText":false,"logoutLink":false,"loginLink":true}
-11-23 18:26:26.036  2948  2948 I MKTV    : console Not allowed to send popup requests.
-11-23 18:26:27.843  2948  2948 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
-11-23 18:26:29.281  2948  2948 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
-11-23 18:26:53.331  2948  2948 I MKTV    : key enter kidMode=true
-11-23 18:26:53.333  2948  2948 I MKTV    : console [MK] key enter kids=true layer=true
-11-23 18:26:54.831  2948  2948 I MKTV    : page started https://join.meirkids.co.il/login.php
-11-23 18:26:55.497  2948  2948 I MKTV    : console Deprecated API for given entry type.
-11-23 18:26:56.068  2948  2948 I MKTV    : page finished https://join.meirkids.co.il/login.php docStartScript=false
-11-23 18:27:15.570  2948  2948 I MKTV    : page started https://meirkids.co.il/
-11-23 18:27:15.725  2948  2948 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
-11-23 18:27:17.402  2948  2948 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
-11-23 18:27:17.691  2948  2948 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
-11-23 18:27:17.715  2948  2948 I MKTV    : console [MK] login state out {"connectedText":false,"logoutLink":false,"loginLink":true}
-11-23 18:27:17.717  2948  2948 I MKTV    : console [MK] login screen {"connectedText":false,"logoutLink":false,"loginLink":true}
-11-23 18:27:17.719  2948  2948 I MKTV    : console Not allowed to send popup requests.
-11-23 18:27:18.188  2948  2948 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
-11-23 18:27:19.719  2948  2948 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
-11-23 18:27:41.608  2948  2948 I MKTV    : key up kidMode=true
-11-23 18:27:41.609  2948  2948 I MKTV    : console [MK] key up kids=true layer=true
-11-23 18:27:41.610  2948  2948 I MKTV    : key up kidMode=true
-11-23 18:27:41.610  2948  2948 I MKTV    : console [MK] key up kids=true layer=true
-11-23 18:27:41.611  2948  2948 I MKTV    : key down kidMode=true
-11-23 18:27:41.612  2948  2948 I MKTV    : console [MK] key down kids=true layer=true
-11-23 18:27:41.612  2948  2948 I MKTV    : key down kidMode=true
-11-23 18:27:41.613  2948  2948 I MKTV    : console [MK] key down kids=true layer=true
-11-23 18:27:41.613  2948  2948 I MKTV    : key enter kidMode=true
-11-23 18:27:42.628  2948  2948 I MKTV    : page started https://meirkids.co.il/
-11-23 18:27:42.698  2948  2948 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
-11-23 18:27:43.800  2948  2948 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
-11-23 18:27:43.958  2948  2948 I MKTV    : console Not allowed to send popup requests.
-11-23 18:27:43.999  2948  2948 I MKTV    : console [MK] ready type=home forcedMode=parent loggedIn=false width=992x558 dpr=2
-11-23 18:27:46.430  2948  2948 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
-11-23 18:28:10.421  2948  2948 I MKTV    : key up kidMode=false
-11-23 18:28:10.431  2948  2948 I MKTV    : key up kidMode=false
-11-23 18:28:10.432  2948  2948 I MKTV    : key down kidMode=false
-11-23 18:28:10.432  2948  2948 I MKTV    : key down kidMode=false
-11-23 18:28:10.433  2948  2948 I MKTV    : key enter kidMode=false
-11-23 18:28:12.132  2948  2948 I MKTV    : page started https://meirkids.co.il/
-11-23 18:28:12.244  2948  2948 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
-11-23 18:28:13.586  2948  2948 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
-11-23 18:28:13.599  2948  2948 I MKTV    : console Not allowed to send popup requests.
-11-23 18:28:13.658  2948  2948 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
-11-23 18:28:13.680  2948  2948 I MKTV    : console [MK] login state out {"connectedText":false,"logoutLink":false,"loginLink":true}
-11-23 18:28:13.682  2948  2948 I MKTV    : console [MK] login screen {"connectedText":false,"logoutLink":false,"loginLink":true}
-11-23 18:28:13.754  2948  2948 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
-11-23 18:28:38.373  5264  5264 I MKTV    : page started https://meirkids.co.il/
-11-23 18:28:38.825  5264  5264 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
-11-23 18:28:40.543  5264  5264 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
-11-23 18:28:40.939  5264  5264 I MKTV    : console [MK] ready type=home forcedMode=kids loggedIn=false width=992x558 dpr=2
-11-23 18:28:40.944  5264  5264 I MKTV    : console [MK] home tiles=67 withImage=67
-11-23 18:28:40.944  5264  5264 I MKTV    : console [MK] focus עלילות ארץ גושן
-11-23 18:28:40.965  5264  5264 I MKTV    : console Not allowed to send popup requests.
-11-23 18:28:41.975  5264  5264 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
-11-23 18:28:46.946  5264  5264 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
-11-23 18:29:17.692  5264  5264 I MKTV    : key right kidMode=true
-11-23 18:29:17.693  5264  5264 I MKTV    : console [MK] key right kids=true layer=false
-11-23 18:29:18.802  5264  5264 I MKTV    : key right kidMode=true
-11-23 18:29:18.803  5264  5264 I MKTV    : console [MK] key right kids=true layer=false
-11-23 18:29:19.912  5264  5264 I MKTV    : key down kidMode=true
-11-23 18:29:19.913  5264  5264 I MKTV    : console [MK] key down kids=true layer=false
-11-23 18:29:19.913  5264  5264 I MKTV    : console [MK] focus הרפתקאות אסי ויהונתן
-11-23 18:29:24.603  5264  5264 I MKTV    : key enter kidMode=true
-11-23 18:29:24.604  5264  5264 I MKTV    : console [MK] key enter kids=true layer=false
-11-23 18:29:24.827  5264  5264 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v
-11-23 18:29:31.429  5264  5264 I MKTV    : console Not allowed to send popup requests.
-11-23 18:29:31.460  5264  5264 I MKTV    : console [MK] ready type=series forcedMode=kids loggedIn=false width=992x558 dpr=2
-11-23 18:29:31.461  5264  5264 I MKTV    : console [MK] series tiles=64 withImage=64 seasons=true
-11-23 18:29:31.461  5264  5264 I MKTV    : console [MK] focus אלון מורה
-11-23 18:29:31.582  5264  5264 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v docStartScript=false
-11-23 18:29:56.160  5264  5264 I MKTV    : key down kidMode=true
-11-23 18:29:56.162  5264  5264 I MKTV    : console [MK] key down kids=true layer=false
-11-23 18:29:56.162  5264  5264 I MKTV    : console [MK] focus תל אביב א
-11-23 18:29:57.347  5264  5264 I MKTV    : key down kidMode=true
-11-23 18:29:57.347  5264  5264 I MKTV    : console [MK] key down kids=true layer=false
-11-23 18:29:57.348  5264  5264 I MKTV    : console [MK] focus ספיישל מאחורי הקלעים
-11-23 18:29:58.531  5264  5264 I MKTV    : key right kidMode=true
-11-23 18:29:58.532  5264  5264 I MKTV    : console [MK] key right kids=true layer=false
-11-23 18:30:03.149  5264  5264 I MKTV    : key enter kidMode=true
-11-23 18:30:03.150  5264  5264 I MKTV    : console [MK] key enter kids=true layer=false
-11-23 18:30:03.496  5264  5264 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F---%D7%A1%D7%A4%D7%99%D7%99%D7%A9%D7%9C-%D7%9E%D7%90%D7%97%D7%95%D7%A8%D7%99-%D7%94%D7%A7%D7%9C%D7%A2%D7%99%D7%9D/596895848/v
-11-23 18:30:04.483  5264  5264 I MKTV    : console [WatchProgress] המנגנון פעיל לכל המשתמשים [object Object]
-11-23 18:30:04.505  5264  5264 I MKTV    : console [MK] ready type=episode forcedMode=kids loggedIn=false width=992x558 dpr=2
-11-23 18:30:04.509  5264  5264 I MKTV    : console Not allowed to send popup requests.
-11-23 18:30:04.978  5264  5264 I MKTV    : console [MK] player html5
-11-23 18:30:05.309  5264  5264 I MKTV    : console Season: 1, Episode: 9
-11-23 18:30:05.469  5264  5264 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F---%D7%A1%D7%A4%D7%99%D7%99%D7%A9%D7%9C-%D7%9E%D7%90%D7%97%D7%95%D7%A8%D7%99-%D7%94%D7%A7%D7%9C%D7%A2%D7%99%D7%9D/596895848/v docStartScript=false
-11-23 18:30:06.011  5264  5264 I MKTV    : console [MK] play ok
-11-23 18:30:08.839  5264  5264 I MKTV    : console [MK] episode ended
-11-23 18:30:13.828  5264  5264 I MKTV    : console [MK] auto next, count=1
-11-23 18:30:14.932  5264  5264 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%9E%D7%9B%D7%9C-%D7%94%D7%A2%D7%95%D7%9C%D7%9D-%D7%9E%D7%A7%D7%93%D7%99%D7%A9%D7%99%D7%9D-%D7%9C%D7%A2%D7%A8%D7%95%D7%A5-%D7%9E%D7%90%D7%99%D7%A8-%D7%91%D7%90%D7%94%D7%91%D7%94/596895887/v
-11-23 18:30:16.657  5264  5264 I MKTV    : console [WatchProgress] המנגנון פעיל לכל המשתמשים [object Object]
-11-23 18:30:16.657  5264  5264 I MKTV    : console Not allowed to send popup requests.
-11-23 18:30:16.657  5264  5264 I MKTV    : console [MK] ready type=episode forcedMode=kids loggedIn=false width=992x558 dpr=2
-11-23 18:30:17.116  5264  5264 I MKTV    : console Season: 10, Episode: 1
-11-23 18:30:17.117  5264  5264 I MKTV    : console JWPlayer
-11-23 18:30:17.117  5264  5264 I MKTV    : console [WatchProgress] הנגן חובר למנגנון השמירה HTML5 — נגן 2
-11-23 18:30:17.295  5264  5264 I MKTV    : console [MK] player html5
-11-23 18:30:17.946  5264  5264 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%9E%D7%9B%D7%9C-%D7%94%D7%A2%D7%95%D7%9C%D7%9D-%D7%9E%D7%A7%D7%93%D7%99%D7%A9%D7%99%D7%9D-%D7%9C%D7%A2%D7%A8%D7%95%D7%A5-%D7%9E%D7%90%D7%99%D7%A8-%D7%91%D7%90%D7%94%D7%91%D7%94/596895887/v docStartScript=false
-11-23 18:30:17.957  5264  5264 I MKTV    : console [WatchProgress] אין נקודת צפייה קודמת 
-11-23 18:30:18.166  5264  5264 I MKTV    : console [MK] play ok
-11-23 18:30:59.746  5264  5264 I MKTV    : key enter kidMode=true
-11-23 18:30:59.750  5264  5264 I MKTV    : console [MK] key enter kids=true layer=false
-11-23 18:31:04.857  5264  5264 I MKTV    : key right kidMode=true
-11-23 18:31:04.858  5264  5264 I MKTV    : console [MK] key right kids=true layer=false
-11-23 18:31:04.997  5264  5264 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
-11-23 18:31:08.378  5264  5264 I MKTV    : key enter kidMode=true
-11-23 18:31:08.382  5264  5264 I MKTV    : console [MK] key enter kids=true layer=false
-11-23 18:31:10.132  5264  5264 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
-11-23 18:31:15.139  5264  5264 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
-11-23 18:31:16.113  5264  5264 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
-11-23 18:31:16.133  5264  5264 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
-11-23 18:31:16.183  5264  5264 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v
-11-23 18:31:17.818  5264  5264 I MKTV    : console Not allowed to send popup requests.
-11-23 18:31:17.865  5264  5264 I MKTV    : console [MK] ready type=series forcedMode=kids loggedIn=false width=992x558 dpr=2
-11-23 18:31:17.896  5264  5264 I MKTV    : console [MK] series tiles=64 withImage=64 seasons=true
-11-23 18:31:17.896  5264  5264 I MKTV    : console [MK] focus בנימין חלק א
-11-23 18:31:18.156  5264  5264 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v docStartScript=false
-11-23 18:31:42.745  5264  5264 I MKTV    : page started https://meirkids.co.il/
-11-23 18:31:42.810  5264  5264 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
-11-23 18:31:44.198  5264  5264 I MKTV    : console [ContinueWatching] בדיקת דף הבית [object Object]
-11-23 18:31:45.164  5264  5264 I MKTV    : console Not allowed to send popup requests.
-11-23 18:31:45.200  5264  5264 I MKTV    : console [MK] ready type=home forcedMode=kids loggedIn=false width=992x558 dpr=2
-11-23 18:31:45.206  5264  5264 I MKTV    : console [MK] home tiles=67 withImage=67
-11-23 18:31:45.206  5264  5264 I MKTV    : console [MK] focus הרפתקאות אסי ויהונתן
-11-23 18:31:45.311  5264  5264 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 19:16:06.512  2962  2962 I MKTV    : page started https://meirkids.co.il/
+11-23 19:16:08.007  2962  2962 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 19:16:20.287  2962  2962 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
+11-23 19:16:20.288  2962  2962 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
+11-23 19:16:20.288  2962  2962 I MKTV    : console [MK] login state out {"connectedText":false,"logoutLink":false,"loginLink":true}
+11-23 19:16:20.288  2962  2962 I MKTV    : console [MK] login screen {"connectedText":false,"logoutLink":false,"loginLink":true}
+11-23 19:16:21.486  2962  2962 I MKTV    : console Not allowed to send popup requests.
+11-23 19:16:24.210  2962  2962 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
+11-23 19:16:24.244  2962  2962 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 19:16:40.905  2962  2962 I MKTV    : key enter kidMode=true
+11-23 19:16:40.912  2962  2962 I MKTV    : console [MK] key enter kids=true layer=true
+11-23 19:16:42.242  2962  2962 I MKTV    : page started https://join.meirkids.co.il/login.php
+11-23 19:16:43.502  2962  2962 I MKTV    : console Deprecated API for given entry type.
+11-23 19:16:44.200  2962  2962 I MKTV    : page finished https://join.meirkids.co.il/login.php docStartScript=false
+11-23 19:17:02.851  2962  2962 I MKTV    : page started https://meirkids.co.il/
+11-23 19:17:02.971  2962  2962 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 19:17:07.856  2962  2962 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
+11-23 19:17:08.260  2962  2962 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
+11-23 19:17:08.346  2962  2962 I MKTV    : console [MK] login state out {"connectedText":false,"logoutLink":false,"loginLink":true}
+11-23 19:17:08.348  2962  2962 I MKTV    : console [MK] login screen {"connectedText":false,"logoutLink":false,"loginLink":true}
+11-23 19:17:08.348  2962  2962 I MKTV    : console Not allowed to send popup requests.
+11-23 19:17:10.013  2962  2962 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 19:17:29.037  2962  2962 I MKTV    : key up kidMode=true
+11-23 19:17:29.038  2962  2962 I MKTV    : console [MK] key up kids=true layer=true
+11-23 19:17:29.039  2962  2962 I MKTV    : key up kidMode=true
+11-23 19:17:29.039  2962  2962 I MKTV    : console [MK] key up kids=true layer=true
+11-23 19:17:29.040  2962  2962 I MKTV    : key down kidMode=true
+11-23 19:17:29.040  2962  2962 I MKTV    : console [MK] key down kids=true layer=true
+11-23 19:17:29.041  2962  2962 I MKTV    : key down kidMode=true
+11-23 19:17:29.041  2962  2962 I MKTV    : console [MK] key down kids=true layer=true
+11-23 19:17:29.041  2962  2962 I MKTV    : key enter kidMode=true
+11-23 19:17:30.085  2962  2962 I MKTV    : page started https://meirkids.co.il/
+11-23 19:17:30.163  2962  2962 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 19:17:31.238  2962  2962 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
+11-23 19:17:32.114  2962  2962 I MKTV    : console [MK] ready type=home forcedMode=parent loggedIn=false width=992x558 dpr=2
+11-23 19:17:32.117  2962  2962 I MKTV    : console Not allowed to send popup requests.
+11-23 19:17:35.492  2962  2962 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 19:18:00.716  2962  2962 I MKTV    : key up kidMode=false
+11-23 19:18:00.737  2962  2962 I MKTV    : key up kidMode=false
+11-23 19:18:00.738  2962  2962 I MKTV    : key down kidMode=false
+11-23 19:18:00.739  2962  2962 I MKTV    : key down kidMode=false
+11-23 19:18:00.740  2962  2962 I MKTV    : key enter kidMode=false
+11-23 19:18:03.201  2962  2962 I MKTV    : page started https://meirkids.co.il/
+11-23 19:18:03.325  2962  2962 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 19:18:05.602  2962  2962 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
+11-23 19:18:12.959  2962  2962 I MKTV    : console Not allowed to send popup requests.
+11-23 19:18:13.123  2962  2962 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
+11-23 19:18:13.193  2962  2962 I MKTV    : console [MK] login state out {"connectedText":false,"logoutLink":false,"loginLink":true}
+11-23 19:18:13.205  2962  2962 I MKTV    : console [MK] login screen {"connectedText":false,"logoutLink":false,"loginLink":true}
+11-23 19:18:13.460  2962  2962 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 19:18:15.207  2962  2962 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
+11-23 19:18:28.291  5327  5327 I MKTV    : page started https://meirkids.co.il/
+11-23 19:18:28.665  5327  5327 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 19:18:32.461  5327  5327 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
+11-23 19:18:32.964  5327  5327 I MKTV    : console Not allowed to send popup requests.
+11-23 19:18:33.450  5327  5327 I MKTV    : console [MK] ready type=home forcedMode=kids loggedIn=false width=992x558 dpr=2
+11-23 19:18:33.487  5327  5327 I MKTV    : console [MK] home tiles=67 withImage=67
+11-23 19:18:33.487  5327  5327 I MKTV    : console [MK] focus עלילות ארץ גושן
+11-23 19:18:33.877  5327  5327 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 19:18:35.449  5327  5327 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
+11-23 19:19:07.875  5327  5327 I MKTV    : key right kidMode=true
+11-23 19:19:07.877  5327  5327 I MKTV    : console [MK] key right kids=true layer=false
+11-23 19:19:08.985  5327  5327 I MKTV    : key right kidMode=true
+11-23 19:19:08.986  5327  5327 I MKTV    : console [MK] key right kids=true layer=false
+11-23 19:19:10.096  5327  5327 I MKTV    : key down kidMode=true
+11-23 19:19:10.096  5327  5327 I MKTV    : console [MK] key down kids=true layer=false
+11-23 19:19:10.096  5327  5327 I MKTV    : console [MK] focus הרפתקאות אסי ויהונתן
+11-23 19:19:14.914  5327  5327 I MKTV    : key enter kidMode=true
+11-23 19:19:14.916  5327  5327 I MKTV    : console [MK] key enter kids=true layer=false
+11-23 19:19:15.355  5327  5327 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v
+11-23 19:19:17.483  5327  5327 I MKTV    : console [MK] ready type=series forcedMode=kids loggedIn=false width=992x558 dpr=2
+11-23 19:19:17.517  5327  5327 I MKTV    : console [MK] series tiles=64 withImage=64 seasons=true
+11-23 19:19:17.517  5327  5327 I MKTV    : console [MK] focus אלון מורה
+11-23 19:19:17.592  5327  5327 I MKTV    : console Not allowed to send popup requests.
+11-23 19:19:20.797  5327  5327 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v docStartScript=false
+11-23 19:19:46.557  5327  5327 I MKTV    : key down kidMode=true
+11-23 19:19:46.558  5327  5327 I MKTV    : console [MK] key down kids=true layer=false
+11-23 19:19:46.558  5327  5327 I MKTV    : console [MK] focus תל אביב א
+11-23 19:19:47.727  5327  5327 I MKTV    : key down kidMode=true
+11-23 19:19:47.729  5327  5327 I MKTV    : console [MK] key down kids=true layer=false
+11-23 19:19:47.729  5327  5327 I MKTV    : console [MK] focus ספיישל מאחורי הקלעים
+11-23 19:19:48.931  5327  5327 I MKTV    : key right kidMode=true
+11-23 19:19:48.931  5327  5327 I MKTV    : console [MK] key right kids=true layer=false
+11-23 19:19:53.632  5327  5327 I MKTV    : key enter kidMode=true
+11-23 19:19:53.633  5327  5327 I MKTV    : console [MK] key enter kids=true layer=false
+11-23 19:19:54.135  5327  5327 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F---%D7%A1%D7%A4%D7%99%D7%99%D7%A9%D7%9C-%D7%9E%D7%90%D7%97%D7%95%D7%A8%D7%99-%D7%94%D7%A7%D7%9C%D7%A2%D7%99%D7%9D/596895848/v
+11-23 19:19:55.160  5327  5327 I MKTV    : console [WatchProgress] המנגנון פעיל לכל המשתמשים [object Object]
+11-23 19:19:55.375  5327  5327 I MKTV    : console [MK] ready type=episode forcedMode=kids loggedIn=false width=992x558 dpr=2
+11-23 19:19:55.376  5327  5327 I MKTV    : console Not allowed to send popup requests.
+11-23 19:19:56.092  5327  5327 I MKTV    : console [MK] player html5
+11-23 19:19:56.471  5327  5327 I MKTV    : console Season: 1, Episode: 9
+11-23 19:19:56.943  5327  5327 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F---%D7%A1%D7%A4%D7%99%D7%99%D7%A9%D7%9C-%D7%9E%D7%90%D7%97%D7%95%D7%A8%D7%99-%D7%94%D7%A7%D7%9C%D7%A2%D7%99%D7%9D/596895848/v docStartScript=false
+11-23 19:19:57.559  5327  5327 I MKTV    : console [MK] play ok
+11-23 19:20:00.230  5327  5327 I MKTV    : console [MK] episode ended
+11-23 19:20:05.208  5327  5327 I MKTV    : console [MK] auto next, count=1
+11-23 19:20:06.578  5327  5327 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%9E%D7%9B%D7%9C-%D7%94%D7%A2%D7%95%D7%9C%D7%9D-%D7%9E%D7%A7%D7%93%D7%99%D7%A9%D7%99%D7%9D-%D7%9C%D7%A2%D7%A8%D7%95%D7%A5-%D7%9E%D7%90%D7%99%D7%A8-%D7%91%D7%90%D7%94%D7%91%D7%94/596895887/v
+11-23 19:20:09.432  5327  5327 I MKTV    : console [WatchProgress] המנגנון פעיל לכל המשתמשים [object Object]
+11-23 19:20:10.038  5327  5327 I MKTV    : console [MK] ready type=episode forcedMode=kids loggedIn=false width=992x558 dpr=2
+11-23 19:20:10.039  5327  5327 I MKTV    : console Not allowed to send popup requests.
+11-23 19:20:10.802  5327  5327 I MKTV    : console Season: 10, Episode: 1
+11-23 19:20:10.830  5327  5327 I MKTV    : console JWPlayer
+11-23 19:20:10.830  5327  5327 I MKTV    : console [WatchProgress] הנגן חובר למנגנון השמירה HTML5 — נגן 2
+11-23 19:20:10.994  5327  5327 I MKTV    : console [MK] player html5
+11-23 19:20:11.477  5327  5327 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%9E%D7%9B%D7%9C-%D7%94%D7%A2%D7%95%D7%9C%D7%9D-%D7%9E%D7%A7%D7%93%D7%99%D7%A9%D7%99%D7%9D-%D7%9C%D7%A2%D7%A8%D7%95%D7%A5-%D7%9E%D7%90%D7%99%D7%A8-%D7%91%D7%90%D7%94%D7%91%D7%94/596895887/v docStartScript=false
+11-23 19:20:11.592  5327  5327 I MKTV    : console [WatchProgress] אין נקודת צפייה קודמת 
+11-23 19:20:11.759  5327  5327 I MKTV    : console [MK] play ok
+11-23 19:20:49.657  5327  5327 I MKTV    : key enter kidMode=true
+11-23 19:20:49.662  5327  5327 I MKTV    : console [MK] key enter kids=true layer=false
+11-23 19:20:54.486  5327  5327 I MKTV    : key right kidMode=true
+11-23 19:20:54.487  5327  5327 I MKTV    : console [MK] key right kids=true layer=false
+11-23 19:20:54.591  5327  5327 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
+11-23 19:20:58.192  5327  5327 I MKTV    : key enter kidMode=true
+11-23 19:20:58.195  5327  5327 I MKTV    : console [MK] key enter kids=true layer=false
+11-23 19:20:59.714  5327  5327 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
+11-23 19:21:04.971  5327  5327 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
+11-23 19:21:07.320  5327  5327 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
+11-23 19:21:07.441  5327  5327 I MKTV    : console [WatchProgress] נשמר בדפדפן (1/10) 
+11-23 19:21:07.490  5327  5327 I MKTV    : page started https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v
+11-23 19:21:08.552  5327  5327 I MKTV    : console [MK] ready type=series forcedMode=kids loggedIn=false width=992x558 dpr=2
+11-23 19:21:08.552  5327  5327 I MKTV    : console [MK] series tiles=64 withImage=64 seasons=true
+11-23 19:21:08.552  5327  5327 I MKTV    : console [MK] focus בנימין חלק א
+11-23 19:21:08.622  5327  5327 I MKTV    : console Not allowed to send popup requests.
+11-23 19:21:09.601  5327  5327 I MKTV    : page finished https://meirkids.co.il/%D7%94%D7%A8%D7%A4%D7%AA%D7%A7%D7%90%D7%95%D7%AA-%D7%90%D7%A1%D7%99-%D7%95%D7%99%D7%94%D7%95%D7%A0%D7%AA%D7%9F/v docStartScript=false
+11-23 19:21:33.991  5327  5327 I MKTV    : page started https://meirkids.co.il/
+11-23 19:21:34.209  5327  5327 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 19:21:37.950  5327  5327 I MKTV    : console [ContinueWatching] בדיקת דף הבית [object Object]
+11-23 19:21:38.270  5327  5327 I MKTV    : console [MK] ready type=home forcedMode=kids loggedIn=false width=992x558 dpr=2
+11-23 19:21:38.305  5327  5327 I MKTV    : console [MK] home tiles=67 withImage=67
+11-23 19:21:38.305  5327  5327 I MKTV    : console [MK] focus הרפתקאות אסי ויהונתן
+11-23 19:21:38.340  5327  5327 I MKTV    : console Not allowed to send popup requests.
+11-23 19:21:40.270  5327  5327 I MKTV    : console Home video autoplay was blocked; the poster will remain visible. [object DOMException]
+11-23 19:21:40.280  5327  5327 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
