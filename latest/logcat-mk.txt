@@ -1,0 +1,50 @@
+11-23 10:24:16.990   473   526 I PackageDexOptimizer: Running dexopt (dexoptNeeded=1) on: /data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg==/base.apk pkg=il.tzion.meirkidstv isa=x86 dexoptFlags=boot_complete,profile_guided,public,enable_hidden_api_checks targetFilter=speed-profile oatDir=/data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg==/oat classLoaderContext=PCL[]{}
+11-23 10:24:16.990   383   383 V installd: DexInv: --- BEGIN '/data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg==/base.apk' ---
+11-23 10:24:17.152  2924  2924 W dex2oat32: /apex/com.android.art/bin/dex2oat32 --zip-fd=7 --zip-location=base.apk --input-vdex-fd=-1 --output-vdex-fd=9 --oat-fd=8 --oat-location=/data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg==/oat/x86/base.odex --instruction-set=x86 --instruction-set-variant=x86 --instruction-set-features=default --runtime-arg -Xbootclasspath:/apex/com.android.art/javalib/core-oj.jar:/apex/com.android.art/javalib/core-libart.jar:/apex/com.android.art/javalib/core-icu4j.jar:/apex/com.android.art/javalib/okhttp.jar:/apex/com.android.art/javalib/bouncycastle.jar:/apex/com.android.art/javalib/apache-xml.jar:/system/framework/framework.jar:/system/framework/ext.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/system/framework/framework-atb-backward-compatibility.jar --runtime-arg -Xms64m --runtime-arg -Xmx512m --updatable-bcp-packages-file=/system/etc/updatable-bcp-packages.txt --resolve-startup-const-strings=true --max-image-block-size=524288 --compiler-filter=speed-profile --swap-fd=10 --classpath-dir=/data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg== --class-loader-context=PCL[]{} --generate-mini-debug-info --compact-dex-level=none --runtime-arg -Xtarget-sdk-version:34 --runtime-arg -Xhidden-api-policy:enabled --compilation-reason=install
+11-23 10:24:17.152  2924  2924 I dex2oat32: /apex/com.android.art/bin/dex2oat32 --input-vdex-fd=-1 --output-vdex-fd=9 --updatable-bcp-packages-file=/system/etc/updatable-bcp-packages.txt --resolve-startup-const-strings=true --max-image-block-size=524288 --compiler-filter=speed-profile --classpath-dir=/data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg== --class-loader-context=PCL[]{} --generate-mini-debug-info --compact-dex-level=none --compilation-reason=install
+11-23 10:24:17.752   383   383 V installd: DexInv: --- END '/data/app/~~3vbLEBhNbFnULrtTTY-U-A==/il.tzion.meirkidstv-y0ZSaNglaB6K3FrhaYE8xg==/base.apk' (success) ---
+11-23 10:24:17.784  1131  1131 I MediaProvider: Invalidating LocalCallingIdentity cache for package il.tzion.meirkidstv. Reason: package android.intent.action.PACKAGE_ADDED
+11-23 10:24:17.786   669   669 D AvrcpMediaPlayerList: Name of package changed: il.tzion.meirkidstv
+11-23 10:24:17.944   473  2478 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=il.tzion.meirkidstv/.MainActivity} from uid 2000
+11-23 10:24:18.046   473   511 I ActivityManager: Start proc 2992:il.tzion.meirkidstv/u0a76 for pre-top-activity {il.tzion.meirkidstv/il.tzion.meirkidstv.MainActivity}
+11-23 10:24:18.375  2992  2992 I TetheringManager: registerTetheringEventCallback:il.tzion.meirkidstv
+11-23 10:24:18.388   473   511 I ActivityManager: Start proc 3034:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0ai9000 for  {il.tzion.meirkidstv/org.chromium.content.app.SandboxedProcessService0:0}
+11-23 10:24:18.445   473   500 D ConnectivityService: requestNetwork for uid/pid:10076/2992 NetworkRequest [ TRACK_DEFAULT id=24, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10076 AdministratorUids: [] RequestorUid: 10076 RequestorPackageName: il.tzion.meirkidstv] ]
+11-23 10:24:18.445   473   653 D Ethernet: got request NetworkRequest [ TRACK_DEFAULT id=24, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10076 AdministratorUids: [] RequestorUid: 10076 RequestorPackageName: il.tzion.meirkidstv] ] with score 60 and providerId 2
+11-23 10:24:18.445   473   620 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=24, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10076 AdministratorUids: [] RequestorUid: 10076 RequestorPackageName: il.tzion.meirkidstv] ] with score 60 and providerId 2
+11-23 10:24:18.445   473   620 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=24, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10076 AdministratorUids: [] RequestorUid: 10076 RequestorPackageName: il.tzion.meirkidstv] ] with score 60 and providerId 2
+11-23 10:24:18.675   473   509 D ArtManagerInternalImpl: /data/misc/iorapd/il.tzion.meirkidstv/5/il.tzion.meirkidstv.MainActivity/compiled_traces/compiled_trace.pb doesn't exist
+11-23 10:24:18.718   473   509 I ActivityTaskManager: Displayed il.tzion.meirkidstv/.MainActivity: +725ms
+11-23 10:24:19.147  2992  2992 I MKTV    : page started https://meirkids.co.il/
+11-23 10:24:20.809  2992  2992 I MKTV    : console ::-webkit-details-marker pseudo element selector is deprecated. Please use ::marker instead. See https://chromestatus.com/feature/6730096436051968 for more details.
+11-23 10:24:25.071  2992  2992 I MKTV    : console [ContinueWatching] אין צפיות שמורות להצגה
+11-23 10:24:25.328   473  1511 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:il.tzion.meirkidstv flg=0x4000010 (has extras) } to com.google.android.packageinstaller/com.android.packageinstaller.PackageInstalledReceiver
+11-23 10:24:25.334   473   510 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:il.tzion.meirkidstv flg=0x4000010 (has extras) } to com.android.vending/com.google.android.finsky.packagemanager.impl.PackageMonitorReceiverImpl$RegisteredReceiver
+11-23 10:24:25.334   473   510 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:il.tzion.meirkidstv flg=0x4000010 (has extras) } to com.google.android.gms/.games.chimera.GamesSystemBroadcastReceiverProxy
+11-23 10:24:25.334   473   510 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:il.tzion.meirkidstv flg=0x4000010 (has extras) } to com.google.android.gms/.gass.chimera.PackageChangeBroadcastReceiver
+11-23 10:24:25.334   473   510 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:il.tzion.meirkidstv flg=0x4000010 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+11-23 10:24:25.334   473   510 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:il.tzion.meirkidstv flg=0x4000010 (has extras) } to com.google.android.tv/com.android.tv.receiver.PackageIntentsReceiver
+11-23 10:24:30.642  2992  2992 I MKTV    : console Not allowed to send popup requests.
+11-23 10:24:34.163  2992  2992 I MKTV    : page finished https://meirkids.co.il/ docStartScript=false
+11-23 10:24:35.013  2992  2992 I MKTV    : console [MK] ready type=home forcedMode=null loggedIn=false width=992x558 dpr=2
+11-23 10:24:54.093  2992  2992 I MKTV    : key up kidMode=false
+11-23 10:24:55.628  2992  2992 I MKTV    : key up kidMode=false
+11-23 10:24:57.480  2992  2992 I MKTV    : key down kidMode=false
+11-23 10:24:59.292  2992  2992 I MKTV    : key down kidMode=false
+11-23 10:25:00.912  2992  2992 I MKTV    : key enter kidMode=false
+11-23 10:25:24.731  1151  5046 I katniss_interactor_UiActionExecutor: Foreground app = il.tzion.meirkidstv
+11-23 10:25:27.462  1151  5046 I katniss_interactor_UiActionExecutor: Foreground app = il.tzion.meirkidstv
+11-23 10:25:29.841  2222  2397 I Finsky  : [205] jms.c(20): ItemStore: Not cached: il.tzion.meirkidstv
+11-23 10:25:32.477  2992  2992 I MKTV    : key right kidMode=false
+11-23 10:25:33.822  2992  2992 I MKTV    : key right kidMode=false
+11-23 10:25:35.676  2992  2992 I MKTV    : key down kidMode=false
+11-23 10:25:42.883  2992  2992 I MKTV    : key left kidMode=false
+11-23 10:25:44.376  2992  2992 I MKTV    : key enter kidMode=false
+11-23 10:26:14.807  2992  2992 I MKTV    : key down kidMode=false
+11-23 10:26:16.142  2992  2992 I MKTV    : key down kidMode=false
+11-23 10:26:17.739  2992  2992 I MKTV    : key right kidMode=false
+11-23 10:26:24.891  2992  2992 I MKTV    : key enter kidMode=false
+11-23 10:26:56.475   473   624 D ConnectivityService: releasing NetworkRequest [ TRACK_DEFAULT id=24, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10076 AdministratorUids: [] RequestorUid: 10076 RequestorPackageName: il.tzion.meirkidstv] ] (release request)
+11-23 10:26:56.551   473  1217 W ActivityManager: Scheduling restart of crashed service il.tzion.meirkidstv/org.chromium.content.app.SandboxedProcessService0:0 in 1000ms for connection
+11-23 10:27:06.776  7647  7733 I Finsky  : [318] ItemStore: Not cached: il.tzion.meirkidstv
+11-23 10:27:07.000  7647  7737 E Finsky  : [322] ItemStore: getItems RPC failed for item il.tzion.meirkidstv
