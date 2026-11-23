@@ -243,6 +243,7 @@
     document.body.appendChild(root);
     html.classList.add('mk-overlay');
     html.classList.remove('mk-boot');
+    silenceSite();
     layerActive = {
       key: function (k) { if (k === 'enter') location.href = LOGIN_URL; },
       back: function () { return 'exit'; }
@@ -309,7 +310,36 @@
     return t;
   }
 
+  // Our screens cover the site, but hidden site videos (the home page banner) would keep
+  // streaming in the background. Stop every site video and embedded player, and keep them stopped.
+  var silencing = false;
+  function silenceSite() {
+    if (silencing) return;
+    silencing = true;
+    function run() {
+      Array.prototype.forEach.call(document.querySelectorAll('video,audio'), function (v) {
+        try {
+          v.pause();
+          v.muted = true;
+          v.autoplay = false;
+          v.preload = 'none';
+          if (v.getAttribute('src') || v.querySelector('source')) {
+            v.removeAttribute('src');
+            Array.prototype.forEach.call(v.querySelectorAll('source'), function (x) { x.parentNode.removeChild(x); });
+            v.load();
+          }
+        } catch (e) {}
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('iframe'), function (f) {
+        if (/youtube|vimeo|player|jwp/i.test(f.getAttribute('src') || '')) f.setAttribute('src', 'about:blank');
+      });
+    }
+    run();
+    setInterval(run, 2000);
+  }
+
   function buildRoot(title) {
+    silenceSite();
     var root = el('div');
     root.id = 'mk-root';
     root.appendChild(el('div', 'mk-title', title));
