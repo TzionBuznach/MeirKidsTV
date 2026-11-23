@@ -218,37 +218,73 @@
   };
 
   // ---------- login detection ----------
-  function loggedIn() {
-    var nodes = document.querySelectorAll('a,button,span,div');
+  // Login state. At TV width the site folds its header into a menu, so the "connected" words
+  // are in the page but hidden. Read the page itself, not what is visible, and only call it
+  // "logged out" on a clear sign of that.
+  function loginSignals() {
+    var sig = { connectedText: false, logoutLink: false, loginLink: false };
+    var nodes = document.querySelectorAll('a,button,span,div,li');
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i];
       if (n.children.length > 2) continue;
       var t = (n.textContent || '').trim();
-      if ((t === 'ניתוק' || t === 'מחובר') && shown(n)) return true;
+      if (t === 'ניתוק' || t === 'מחובר' || t === 'התנתקות' || t === 'יציאה מהחשבון') sig.connectedText = true;
     }
-    return false;
+    sig.logoutLink = !!document.querySelector('a[href*="logout" i],a[href*="logoff" i],a[href*="disconnect" i],[onclick*="logout" i]');
+    sig.loginLink = !!document.querySelector('a.menu-login,a[href*="join.meirkids.co.il/login"]');
+    return sig;
   }
+  function loginState() {
+    var sig = loginSignals();
+    if (sig.connectedText || sig.logoutLink) return { state: 'in', sig: sig };
+    if (sig.loginLink) return { state: 'out', sig: sig };
+    return { state: 'unknown', sig: sig }; // no clear sign: carry on as logged in
+  }
+  function loggedIn() { return loginState().state !== 'out'; }
 
   // Logged out: our own screen with one button to the login page. The site's own login button is
-  // hidden in a menu at TV width, so we do not rely on it.
+  // hidden in a menu at TV width, so we do not rely on it. A second button lets a parent go on
+  // anyway, so a wrong guess here can never trap anyone in a loop.
   var LOGIN_URL = 'https://join.meirkids.co.il/login.php';
-  function showLoginScreen() {
+  function showLoginScreen(ls) {
     var root = el('div', 'mk-center');
     root.id = 'mk-root';
     var box = el('div', 'mk-login');
     box.appendChild(el('h1', null, 'צריך להתחבר לחשבון'));
-    box.appendChild(el('p', null, 'פעם אחת בלבד, על ידי הורה. אחרי ההתחברות לוחצים על "חזור" בשלט, והאפליקציה עוברת למצב ילדים.'));
-    box.appendChild(el('div', 'mk-btn mk-focus', 'לחצו OK למעבר להתחברות'));
+    box.appendChild(el('p', null, 'פעם אחת בלבד, על ידי הורה. אחרי ההתחברות לוחצים על "חזור" בשלט.'));
+    var btnLogin = el('div', 'mk-btn mk-focus', 'מעבר להתחברות');
+    var btnGo = el('div', 'mk-btn', 'כבר התחברתי, המשך');
+    btnGo.style.marginRight = '24px';
+    box.appendChild(btnLogin);
+    box.appendChild(btnGo);
+    var s = ls.sig;
+    var diag = el('div', null, 'אבחון: ' + [
+      'connected=' + (s.connectedText ? 1 : 0),
+      'logout=' + (s.logoutLink ? 1 : 0),
+      'login=' + (s.loginLink ? 1 : 0),
+      'w=' + window.innerWidth,
+      'cookies=' + (document.cookie ? document.cookie.split(';').length : 0)
+    ].join(' '));
+    diag.style.cssText = 'margin-top:40px;font-size:15px;opacity:.55;direction:ltr';
+    box.appendChild(diag);
     root.appendChild(box);
     document.body.appendChild(root);
     html.classList.add('mk-overlay');
     html.classList.remove('mk-boot');
     silenceSite();
+    var cur = btnLogin;
+    function focusBtn(b) { cur.classList.remove('mk-focus'); cur = b; cur.classList.add('mk-focus'); }
     layerActive = {
-      key: function (k) { if (k === 'enter') location.href = LOGIN_URL; },
+      key: function (k) {
+        if (k === 'left' || k === 'right' || k === 'up' || k === 'down') { focusBtn(cur === btnLogin ? btnGo : btnLogin); return; }
+        if (k !== 'enter') return;
+        if (cur === btnLogin) { location.href = LOGIN_URL; return; }
+        sess('mkSkipLogin', '1');
+        location.reload();
+      },
       back: function () { return 'exit'; }
     };
-    log('login screen');
+    log('login screen ' + JSON.stringify(s));
   }
 
   // Logged out: put the remote's focus on the site's own login button, so a parent presses OK once.
@@ -739,9 +775,10 @@
       return;
     }
     native('setKidMode', true);
-    if ((type === 'home' || type === 'series') && forcedMode !== 'kids' && !loggedIn()) {
-      showLoginScreen();
-      return;
+    if ((type === 'home' || type === 'series') && forcedMode !== 'kids' && sess('mkSkipLogin') !== '1') {
+      var ls = loginState();
+      log('login state ' + ls.state + ' ' + JSON.stringify(ls.sig));
+      if (ls.state === 'out') { showLoginScreen(ls); return; }
     }
     if (type === 'home') initHome();
     else if (type === 'series') initSeries();
