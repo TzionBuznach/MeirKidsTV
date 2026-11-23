@@ -22,6 +22,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import androidx.webkit.JavaScriptReplyProxy;
+import androidx.webkit.WebMessageCompat;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
@@ -30,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+
+import org.json.JSONObject;
 
 /**
  * A thin TV wrapper around meirkids.co.il.
@@ -53,6 +57,9 @@ public class MainActivity extends Activity {
     private WebChromeClient.CustomViewCallback customViewCallback;
     private String injectJs = "";
     private boolean documentStartScriptInstalled = false;
+    // Detailed logging (page addresses, keys, page console) only when started with --ez mk_debug true,
+    // as the emulator test does. Normal use logs nothing.
+    private boolean debugLog = false;
     // True while a page is in kid mode. Then every remote key is caught here, before the
     // WebView, and handed to inject.js directly, so nothing inside the page (like the video
     // frame) can swallow it.
@@ -70,9 +77,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         injectJs = readAsset("inject.js");
-        if (getIntent() != null && getIntent().getBooleanExtra("mk_force_kids", false)) {
-            // Test hook for the emulator, which has no subscription: kid mode without logging in.
-            injectJs = "window.__mkForceKids=true;" + injectJs;
+        if (getIntent() != null) {
+            debugLog = getIntent().getBooleanExtra("mk_debug", false);
+            if (getIntent().getBooleanExtra("mk_force_kids", false)) {
+                // Test hook for the emulator, which has no subscription: kid mode without logging in.
+                // It only skips the login screen; without a login the site plays nothing anyway.
+                injectJs = "window.__mkForceKids=true;" + injectJs;
+            }
+            if (debugLog) injectJs = "window.__mkDebug=true;" + injectJs;
         }
 
         root = new FrameLayout(this);
@@ -96,13 +108,27 @@ public class MainActivity extends Activity {
         s.setUseWideViewPort(true);
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
-        s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); // nothing over plain http
+        s.setAllowFileAccess(false);    // pages cannot read files on the TV
+        s.setAllowContentAccess(false);
+        s.setGeolocationEnabled(false);
+        s.setSaveFormData(false);
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, true);
 
-        webView.addJavascriptInterface(new NativeBridge(), "MKNative");
+        // The page script talks to the app through "MKNative". Where the WebView supports it, only
+        // pages from https://meirkids.co.il can see it; embedded frames (Vimeo, ads) cannot.
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            WebViewCompat.addWebMessageListener(webView, "MKNative",
+                    Collections.singleton("https://meirkids.co.il"),
+                    (view, message, sourceOrigin, isMainFrame, replyProxy) -> {
+                        if (isMainFrame && message != null) handleBridgeMessage(message.getData());
+                    });
+        } else {
+            webView.addJavascriptInterface(new LegacyBridge(), "MKNative");
+        }
 
         // Preferred: run inject.js before the site's own scripts, so the raw site never flashes.
         if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
@@ -121,8 +147,11 @@ public class MainActivity extends Activity {
                 if (!request.isForMainFrame()) return false;
                 Uri uri = request.getUrl();
                 String host = uri.getHost() == null ? "" : uri.getHost();
-                // Stay inside the channel. Everything else (forms, YouTube, social) is ignored.
-                boolean allowed = host.equals("meirkids.co.il") || host.endsWith(".meirkids.co.il");
+                // Stay inside the channel, over https only. Everything else (other sites, app links,
+                // intent: and market: links) is ignored.
+                boolean allowed = "https".equals(uri.getScheme())
+                        && (host.equals("meirkids.co.il") || host.endsWith(".meirkids.co.il"));
+                if (!allowed) debug("blocked navigation " + uri);
                 return !allowed;
             }
 
@@ -130,7 +159,7 @@ public class MainActivity extends Activity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 kidMode = false; // the new page will switch it back on when it is ready
-                Log.i(TAG, "page started " + url);
+                debug("page started " + url);
             }
 
             @Override
@@ -143,7 +172,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                Log.i(TAG, "page finished " + url + " docStartScript=" + documentStartScriptInstalled);
+                debug("page finished " + url + " docStartScript=" + documentStartScriptInstalled);
                 injectFallback(view, url); // inject.js guards against running twice
                 CookieManager.getInstance().flush();
             }
@@ -158,7 +187,7 @@ public class MainActivity extends Activity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
-                    Log.w(TAG, "load error " + request.getUrl() + " " + error.getDescription());
+                    debug("load error " + request.getUrl() + " " + error.getDescription());
                     view.loadUrl(ERROR_URL);
                 }
             }
@@ -167,7 +196,7 @@ public class MainActivity extends Activity {
         chromeClient = new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(ConsoleMessage m) {
-                Log.i(TAG, "console " + m.message());
+                debug("console " + m.message());
                 return true;
             }
 
@@ -245,7 +274,7 @@ public class MainActivity extends Activity {
 
         String name = remoteKey(code);
         if (name == null) return super.dispatchKeyEvent(event);
-        if (action == KeyEvent.ACTION_DOWN) Log.i(TAG, "key " + name + " kidMode=" + kidMode);
+        if (action == KeyEvent.ACTION_DOWN) debug("key " + name + " kidMode=" + kidMode);
 
         // Parent mode switch: up up down down, then OK, within 4 seconds. Works in both modes.
         if (name.equals("enter")) {
@@ -371,27 +400,45 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** Small bridge used by inject.js. Only touches the screen-on flag and app exit. */
-    private class NativeBridge {
-        @JavascriptInterface
-        public void setKeepScreenOn(final boolean on) {
-            runOnUiThread(() -> {
-                if (on) {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                } else {
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                }
-            });
-        }
+    private void debug(String msg) {
+        if (debugLog) Log.i(TAG, msg);
+    }
 
-        @JavascriptInterface
-        public void setKidMode(boolean on) {
-            kidMode = on;
+    /**
+     * Messages from inject.js, as JSON {"cmd": ..., "on": ...}. Only three commands exist,
+     * none of them can open anything or reach outside the app.
+     */
+    private void handleBridgeMessage(String json) {
+        if (json == null) return;
+        try {
+            JSONObject m = new JSONObject(json);
+            String cmd = m.optString("cmd");
+            final boolean on = m.optBoolean("on");
+            switch (cmd) {
+                case "setKidMode":
+                    kidMode = on;
+                    break;
+                case "setKeepScreenOn":
+                    runOnUiThread(() -> {
+                        if (on) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    });
+                    break;
+                case "log":
+                    debug("console " + m.optString("msg"));
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception ignored) {
         }
+    }
 
+    /** Fallback for old WebViews without message listeners: same single entry point. */
+    private class LegacyBridge {
         @JavascriptInterface
-        public void reloadHome() {
-            runOnUiThread(() -> webView.loadUrl(HOME_URL));
+        public void postMessage(String json) {
+            handleBridgeMessage(json);
         }
     }
 }

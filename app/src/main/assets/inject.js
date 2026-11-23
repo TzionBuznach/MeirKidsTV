@@ -28,8 +28,8 @@
   // ---------- small helpers ----------
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
   function sess(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
-  function native(fn, arg) { try { if (window.MKNative && window.MKNative[fn]) window.MKNative[fn](arg); } catch (e) {} }
-  function log(msg) { try { console.log('[MK] ' + msg); } catch (e) {} }
+  function native(cmd, on) { try { if (window.MKNative && window.MKNative.postMessage) window.MKNative.postMessage(JSON.stringify({ cmd: cmd, on: !!on })); } catch (e) {} }
+  function log(msg) { if (!window.__mkDebug) return; try { console.log('[MK] ' + msg); } catch (e) {} }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function shown(e) { return !!(e && e.getClientRects && e.getClientRects().length); }
   function onReady(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }

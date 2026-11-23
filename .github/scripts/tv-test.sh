@@ -13,7 +13,7 @@ adb install -r "$APK"
 adb logcat -c
 
 # 1) Logged out (the emulator has no account): expect our login screen.
-adb shell am start -n $PKG/.MainActivity
+adb shell am start -n $PKG/.MainActivity --ez mk_debug true
 shot 01-logged-out 35
 key 23                       # OK -> login page
 shot 02-login-page 20
@@ -28,7 +28,7 @@ shot 05-back-to-auto 25
 
 # 3) Kid mode without an account (test hook), to check the grids and keys.
 adb shell am force-stop $PKG
-adb shell am start -n $PKG/.MainActivity --ez mk_force_kids true
+adb shell am start -n $PKG/.MainActivity --ez mk_force_kids true --ez mk_debug true
 shot 10-home-grid 40
 key 22; key 22; key 20
 shot 11-home-moved 3
@@ -75,7 +75,7 @@ echo "phase | duration | app CPU time used | device network | app alive" > $R
 
 adb shell am force-stop $PKG
 adb shell input keyevent 224; sleep 2
-adb shell am start -n $PKG/.MainActivity --ez mk_force_kids true
+adb shell am start -n $PKG/.MainActivity --ez mk_force_kids true --ez mk_debug true
 sleep 40
 phase "A. app open on the home grid (idle)" 60
 adb shell input keyevent 3            # Home: app goes to the background

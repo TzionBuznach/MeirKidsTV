@@ -8,6 +8,6 @@ h1{font-size:40px;margin:0 0 16px}p{font-size:26px;opacity:.85;margin:0 0 30px}
 </style></head>
 <body><div><h1>אין חיבור לאינטרנט</h1><p>בודקים שהראוטר דולק ומנסים שוב</p><div class="btn">לחצו OK לנסות שוב</div></div>
 <script>
-document.addEventListener('keyup',function(e){if(e.key==='Enter'||e.keyCode===13){if(window.MKNative)MKNative.reloadHome();else location.href='https://meirkids.co.il/';}});
-setTimeout(function(){if(navigator.onLine&&window.MKNative)MKNative.reloadHome();},15000);
+document.addEventListener('keyup',function(e){if(e.key==='Enter'||e.keyCode===13){location.href='https://meirkids.co.il/';}});
+setInterval(function(){if(navigator.onLine)location.href='https://meirkids.co.il/';},15000);
 </script></body></html>
