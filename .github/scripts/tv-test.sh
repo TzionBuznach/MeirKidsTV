@@ -75,10 +75,15 @@ uidnet() { # prints "uid bytes" for every app, after forcing Android to update i
     END { for (u in t) print u, t[u] }'
 }
 devnet() { adb shell cat /proc/net/dev | tr -d '\r' | awk -F'[: ]+' 'NR>2 && $2!="lo" {rx+=$3; tx+=$11} END {print rx+tx}'; }
+sockets() { # "uid count" of established TCP connections to the internet
+  adb shell cat /proc/net/tcp /proc/net/tcp6 2>/dev/null | tr -d '\r' | awk 'NR>1 && $4=="01" {print $8}' | sort | uniq -c | awk '{print $2, $1}'
+}
 phase() { # name seconds
   local c0 r0 n0 c1 r1 n1
   c0=$(cpu); r0=$(rcpu); n0=$(devnet); uidnet > /tmp/u0.txt
-  sleep "$2"
+  : > /tmp/sock.txt
+  local end=$((SECONDS + $2))
+  while [ $SECONDS -lt $end ]; do sockets >> /tmp/sock.txt; sleep 10; done
   c1=$(cpu); r1=$(rcpu); n1=$(devnet); uidnet > /tmp/u1.txt
   local alive="yes"; [ -z "$(adb shell pidof $PKG | tr -d '\r')" ] && alive="no"
   local dc="-"; [ "$c0" != "-" ] && [ "$c1" != "-" ] && dc=$(awk -v a=$c0 -v b=$c1 'BEGIN{printf "%.2f s", (b-a)/100}')
@@ -87,7 +92,8 @@ phase() { # name seconds
   local dapp=$(( (${app1:-0} - ${app0:-0}) / 1024 ))
   local ddev=$(( (n1 - n0) / 1024 ))
   local top=$(join <(sort /tmp/u0.txt) <(sort /tmp/u1.txt) -a2 -e0 -o 0,1.2,2.2 | awk '{d=$3-$2; if (d>0) print d, $1}' | sort -rn | head -3 | while read d u; do n=$(awk -v u=$u '$1==u{print $2; exit}' /tmp/uids.txt); echo -n "${n:-uid $u}=$((d/1024))KB "; done)
-  echo "$1 | ${2}s | app CPU $dc | page renderer CPU $dr | app network ${dapp} KB | whole device ${ddev} KB | alive: $alive | top network users: ${top:-none}" | tee -a $R
+  local socks=$(awk '{c[$1]+=$2} END {for (u in c) print c[u], u}' /tmp/sock.txt | sort -rn | head -3 | while read c u; do n=$(awk -v u=$u '$1==u{print $2; exit}' /tmp/uids.txt); echo -n "${n:-uid $u}($c) "; done)
+  echo "$1 | ${2}s | app CPU $dc | page renderer CPU $dr | app network ${dapp} KB | whole device ${ddev} KB | alive: $alive | top network users: ${top:-none} | open connections by app: ${socks:-none}" | tee -a $R
 }
 echo "app uid: $APPUID" > $R
 echo "phase | duration | app CPU | renderer CPU | app network | whole device | alive | top users" >> $R
@@ -111,6 +117,6 @@ phase "D. baseline: screen off, app stopped" 120
 adb shell input keyevent 224
 echo "== wake locks held by the app (should be none):" | tee -a $R
 adb shell dumpsys power | tr -d '\r' | grep -i "$PKG" | tee -a $R || true
-echo "== netstats sample (format check):" >> $R
-adb shell dumpsys netstats detail | tr -d '\r' | grep -m5 -A2 "uid=$APPUID set=DEFAULT tag=0x0" >> $R || true
+adb shell dumpsys netstats detail | tr -d '\r' > shots/netstats-detail.txt
+adb shell dumpsys netstats --uid | tr -d '\r' > shots/netstats-uid.txt 2>&1 || true
 cat $R
