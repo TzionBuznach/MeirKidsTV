@@ -38,6 +38,13 @@ key 20; key 20; key 22
 shot 13-series-moved 3
 key 23
 shot 14-episode 30
+shot 14b-episode-later 20
+key 23                       # OK: pause
+shot 14c-paused 3
+key 22                       # right: +10 s
+shot 14d-seek 2
+key 23                       # OK: play again
+shot 14e-playing 5
 key 4
 shot 15-back-to-series 25
 key 4

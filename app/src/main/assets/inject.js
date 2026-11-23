@@ -68,7 +68,7 @@
     '.mk-focus{border-color:#ffd54a!important;transform:scale(1.06);box-shadow:0 0 0 4px rgba(255,213,74,.35),0 12px 30px rgba(0,0,0,.6);z-index:2}',
     'html.mk-player,html.mk-player body{background:#000!important;overflow:hidden!important}',
     'html.mk-player body *{visibility:hidden!important}',
-    'html.mk-player .mk-fs,html.mk-player #mk-layer,html.mk-player #mk-layer *,html.mk-player #mk-toast{visibility:visible!important}',
+    'html.mk-player .mk-fs,html.mk-player .mk-fs *,html.mk-player #mk-layer,html.mk-player #mk-layer *,html.mk-player #mk-toast{visibility:visible!important}',
     'html.mk-player .mk-fs{position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:2147482000!important;border:0!important;background:#000!important;pointer-events:none!important;transform:none!important}',
     '#mk-layer{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483100;display:none;align-items:center;justify-content:center;flex-direction:column;direction:rtl;font-family:Arial,Helvetica,sans-serif;color:#fff;pointer-events:none}',
     '#mk-layer.mk-on{display:flex}',
@@ -499,72 +499,127 @@
   function initEpisode() {
     var epId = segs[2];
     var ended = false;
-    var player = null;
+    var progress = 0;
+    var startedAt = Date.now();
 
     html.classList.add('mk-player');
     html.classList.remove('mk-boot');
 
-    var progress = 0;
-    var vimeoTries = 0;
-    setupVimeo();
-
-    function setupVimeo() {
-    if (++vimeoTries > 3) return;
-    waitFor(function () {
+    // The site uses more than one player: Vimeo for most series, JW Player for some,
+    // and plain HTML5 video elsewhere. Whichever shows up first is used.
+    function vimeoAdapter() {
       var f = document.getElementById('vimeo-player');
-      return (f && window.Vimeo && window.Vimeo.Player) ? f : null;
-    }, 10000, function (frame) {
-      if (!frame) { if (vimeoTries === 1) initHtml5OrFallback(); return; }
-      frame.classList.add('mk-fs');
-      frame.setAttribute('tabindex', '-1');
-      try { frame.blur(); } catch (e) {}
-      player = new window.Vimeo.Player(frame);
-      player.on('timeupdate', function (d) { if (d && typeof d.percent === 'number') progress = d.percent; });
-      wirePlayer({
+      if (!f || !window.Vimeo || !window.Vimeo.Player) return null;
+      var player = new window.Vimeo.Player(f);
+      f.setAttribute('tabindex', '-1');
+      try { f.blur(); } catch (e) {}
+      return {
+        kind: 'vimeo', fsEl: f,
         play: function () { return player.play(); },
         pause: function () { return player.pause(); },
         paused: function () { return player.getPaused(); },
-        seekBy: function (s) {
+        seekBy: function (sec) {
           return Promise.all([player.getCurrentTime(), player.getDuration()]).then(function (v) {
-            return player.setCurrentTime(Math.max(0, Math.min(v[1] - 1, v[0] + s)));
+            return player.setCurrentTime(Math.max(0, Math.min(v[1] - 1, v[0] + sec)));
           });
         },
-        on: function (ev, fn) { player.on(ev, fn); }
-      });
-      // If the site removes the player before we heard "ended", treat that as the end.
-      var mo = new MutationObserver(function () {
-        if (document.getElementById('vimeo-player')) return;
-        mo.disconnect();
-        if (progress > 0.9) onEnded();
-        else setTimeout(function () { if (!ended) { setupVimeo(); } }, 1000); // site swapped the player early: hook the new one
-      });
-      mo.observe(document.body, { childList: true, subtree: true });
-    });
+        on: function (ev, fn) { player.on(ev, fn); },
+        watchRemoval: true
+      };
     }
 
-    function initHtml5OrFallback() {
-      var v = document.querySelector('video');
-      if (!v) { html.classList.remove('mk-player'); initFallback(); return; }
-      v.classList.add('mk-fs');
-      wirePlayer({
+    function jwAdapter() {
+      if (typeof window.jwplayer !== 'function') return null;
+      var p;
+      try { p = window.jwplayer(); } catch (e) { return null; }
+      if (!p || typeof p.getState !== 'function' || typeof p.getContainer !== 'function') return null;
+      var box = p.getContainer();
+      if (!box) return null;
+      return {
+        kind: 'jw', fsEl: box,
+        play: function () { try { p.play(true); } catch (e) {} return Promise.resolve(); },
+        pause: function () { try { p.pause(true); } catch (e) {} return Promise.resolve(); },
+        paused: function () { var st = p.getState(); return Promise.resolve(st !== 'playing' && st !== 'buffering'); },
+        seekBy: function (sec) {
+          var d = p.getDuration() || 0;
+          p.seek(Math.max(0, Math.min(d - 1, (p.getPosition() || 0) + sec)));
+          return Promise.resolve();
+        },
+        on: function (ev, fn) {
+          if (ev === 'ended') p.on('complete', fn);
+          else if (ev === 'timeupdate') p.on('time', function (d) { fn({ percent: d && d.duration ? d.position / d.duration : 0 }); });
+          else p.on(ev, fn);
+        },
+        state: function () { try { return p.getState(); } catch (e) { return '?'; } }
+      };
+    }
+
+    function html5Adapter() {
+      var v = null;
+      Array.prototype.forEach.call(document.querySelectorAll('video'), function (x) { if (!v && (x.currentSrc || x.src || x.querySelector('source'))) v = x; });
+      if (!v) return null;
+      return {
+        kind: 'html5', fsEl: v,
         play: function () { return v.play(); },
         pause: function () { v.pause(); return Promise.resolve(); },
         paused: function () { return Promise.resolve(v.paused); },
-        seekBy: function (s) { v.currentTime = Math.max(0, Math.min((v.duration || 0) - 1, v.currentTime + s)); return Promise.resolve(); },
+        seekBy: function (sec) { v.currentTime = Math.max(0, Math.min((v.duration || 0) - 1, v.currentTime + sec)); return Promise.resolve(); },
         on: function (ev, fn) {
           if (ev === 'timeupdate') v.addEventListener('timeupdate', function () { fn({ percent: v.duration ? v.currentTime / v.duration : 0 }); });
           else v.addEventListener(ev, fn);
         }
-      });
+      };
+    }
+
+    (function detect() {
+      if (ended) return;
+      var a = null;
+      try { a = vimeoAdapter() || jwAdapter() || html5Adapter(); } catch (e) { a = null; }
+      if (a) { log('player ' + a.kind); wirePlayer(a); return; }
+      if (Date.now() - startedAt > 15000) { log('no player found'); noPlayer(); return; }
+      setTimeout(detect, 300);
+    })();
+
+    // Never leave a kid on a black screen.
+    function noPlayer() {
+      var card = el('div', 'mk-card');
+      card.appendChild(el('div', 'mk-big', 'הפרק לא נטען'));
+      card.appendChild(el('div', 'mk-big', 'חוזרים לרשימת הפרקים...'));
+      showLayer(card);
+      var go = function () { location.href = seriesUrl; };
+      layerActive = { key: function (k) { if (k === 'enter') go(); }, back: go };
+      setTimeout(go, 4000);
     }
 
     function wirePlayer(p) {
+      p.fsEl.classList.add('mk-fs');
       p.on('play', function () { native('setKeepScreenOn', true); showLayer(null); });
       p.on('pause', function () { native('setKeepScreenOn', false); });
       p.on('ended', function () { onEnded(); });
-      p.on('timeupdate', function (d) { if (d && d.percent > 0.85) markWatched(seriesSlug, epId); });
-      var started = p.play();
-      if (started && started.catch) started.catch(function () { toast('לחצו OK כדי להתחיל', 4000); });
+      p.on('timeupdate', function (d) {
+        if (d && typeof d.percent === 'number') progress = d.percent;
+        if (progress > 0.85) markWatched(seriesSlug, epId);
+      });
+      var started = null;
+      try { started = p.play(); } catch (e) { started = null; }
+      if (started && started.then) started.then(function () { log('play ok'); }, function (e) { log('play failed ' + e); toast('לחצו OK כדי להתחיל', 4000); });
+      if (p.state) setTimeout(function () { log('player state after 8s: ' + p.state()); }, 8000);
+
+      if (p.watchRemoval) {
+        // The site removes the Vimeo frame at the end and shows its own suggestions. If that happens
+        // before we heard "ended", treat it as the end; if it happens early, hook the new player.
+        var mo = new MutationObserver(function () {
+          if (document.body.contains(p.fsEl)) return;
+          mo.disconnect();
+          if (progress > 0.9) onEnded();
+          else setTimeout(function () {
+            if (ended) return;
+            var again = vimeoAdapter();
+            if (again) { log('player replaced, rewiring'); wirePlayer(again); }
+          }, 1000);
+        });
+        mo.observe(document.body, { childList: true, subtree: true });
+      }
 
       handlers.enter = function () {
         p.paused().then(function (isPaused) {
@@ -584,6 +639,7 @@
     function onEnded() {
       if (ended) return;
       ended = true;
+      log('episode ended');
       native('setKeepScreenOn', false);
       markWatched(seriesSlug, epId);
       handlers.enter = null;
@@ -617,6 +673,7 @@
             clearInterval(timer);
             sess('mkAuto', String(auto + 1));
             layerActive = null;
+            log('auto next, count=' + (auto + 1));
             nextBtn.click();
             // If the click did not navigate, go back to the list rather than sit on a black screen.
             setTimeout(function () { location.href = seriesUrl; }, 6000);
