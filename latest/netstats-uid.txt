@@ -1,0 +1,56 @@
+Configs:
+  netstats_combine_subtype_enabled=false 
+Active interfaces:
+  iface=wlan0 ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] 
+Active UID interfaces:
+  iface=wlan0 ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] 
+Top openSession callers (uid=count):
+
+Stats Providers:
+  OffloadController Xt:
+    NetworkStats: elapsedRealtime=0
+  OffloadController Uid:
+    NetworkStats: elapsedRealtime=0
+  BpfCoordinator Xt:
+    NetworkStats: elapsedRealtime=0
+  BpfCoordinator Uid:
+    NetworkStats: elapsedRealtime=0
+Dev stats:
+  Pending bytes: 10624
+  History since boot:
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=-1 set=ALL tag=0x0
+    NetworkStatsHistory: bucketDuration=3600
+      st=1795442400 rb=1112 rp=7 tb=947 tp=8 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=-1 set=ALL tag=0x0
+    NetworkStatsHistory: bucketDuration=3600
+      st=1795442400 rb=5549 rp=22 tb=3016 tp=26 op=0
+Xt stats:
+  Pending bytes: 10624
+  History since boot:
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=-1 set=ALL tag=0x0
+    NetworkStatsHistory: bucketDuration=3600
+      st=1795442400 rb=1112 rp=7 tb=947 tp=8 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=-1 set=ALL tag=0x0
+    NetworkStatsHistory: bucketDuration=3600
+      st=1795442400 rb=5549 rp=22 tb=3016 tp=26 op=0
+UID stats:
+  Pending bytes: 11120
+  History since boot:
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1020 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795442400 rb=1660 rp=8 tb=354 tp=2 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=false}] uid=1051 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795442400 rb=40 rp=1 tb=64 tp=1 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=0 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795442400 rb=0 rp=0 tb=392 tp=5 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1000 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795442400 rb=202 rp=2 tb=138 tp=2 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1020 set=DEFAULT tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795442400 rb=1660 rp=8 tb=354 tp=2 op=0
+  ident=[{type=WIFI, subType=0, networkId="AndroidWifi", metered=false, defaultNetwork=true}] uid=1073 set=FOREGROUND tag=0x0
+    NetworkStatsHistory: bucketDuration=7200
+      st=1795442400 rb=4519 rp=15 tb=1737 tp=15 op=0
