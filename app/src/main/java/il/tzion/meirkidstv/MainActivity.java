@@ -54,7 +54,12 @@ public class MainActivity extends Activity {
     // WebView, and handed to inject.js directly, so nothing inside the page (like the video
     // frame) can swallow it.
     private volatile boolean kidMode = false;
-    private static final long LONG_PRESS_MS = 3000;
+    // Parent mode is switched with a key sequence a kid will not hit by accident: up up down down OK.
+    private static final String[] PARENT_SEQUENCE = {"up", "up", "down", "down"};
+    private static final long SEQUENCE_WINDOW_MS = 4000;
+    private final String[] recentKeys = new String[4];
+    private final long[] recentTimes = new long[4];
+    private boolean sequenceEnterPending = false;
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -214,11 +219,22 @@ public class MainActivity extends Activity {
         String name = remoteKey(code);
         if (name == null) return super.dispatchKeyEvent(event);
 
-        if (name.equals("enter") && action == KeyEvent.ACTION_UP
-                && event.getEventTime() - event.getDownTime() >= LONG_PRESS_MS) {
-            // Held OK: switch between kid mode and parent mode, in either mode.
-            runJs("window.__mk&&window.__mk.toggleParent&&window.__mk.toggleParent()");
-            return true;
+        // Parent mode switch: up up down down, then OK, within 4 seconds. Works in both modes.
+        if (name.equals("enter")) {
+            if (action == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0 && sequenceMatches(event.getEventTime())) {
+                sequenceEnterPending = true;
+                return true;
+            }
+            if (sequenceEnterPending) {
+                if (action == KeyEvent.ACTION_UP) {
+                    sequenceEnterPending = false;
+                    clearSequence();
+                    runJs("window.__mk&&window.__mk.toggleParent&&window.__mk.toggleParent()");
+                }
+                return true;
+            }
+        } else if (action == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            rememberKey(name, event.getEventTime());
         }
 
         if (!kidMode) return super.dispatchKeyEvent(event); // parent mode: normal browsing
@@ -232,6 +248,24 @@ public class MainActivity extends Activity {
             runJs("window.__mk&&window.__mk.key&&window.__mk.key('" + name + "')");
         }
         return true;
+    }
+
+    private void rememberKey(String name, long time) {
+        System.arraycopy(recentKeys, 1, recentKeys, 0, recentKeys.length - 1);
+        System.arraycopy(recentTimes, 1, recentTimes, 0, recentTimes.length - 1);
+        recentKeys[recentKeys.length - 1] = name;
+        recentTimes[recentTimes.length - 1] = time;
+    }
+
+    private boolean sequenceMatches(long now) {
+        for (int i = 0; i < PARENT_SEQUENCE.length; i++) {
+            if (!PARENT_SEQUENCE[i].equals(recentKeys[i])) return false;
+        }
+        return now - recentTimes[0] <= SEQUENCE_WINDOW_MS;
+    }
+
+    private void clearSequence() {
+        for (int i = 0; i < recentKeys.length; i++) recentKeys[i] = null;
     }
 
     private void runJs(String js) {

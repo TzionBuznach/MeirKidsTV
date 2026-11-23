@@ -10,8 +10,8 @@
  *                                        at the end: 5 second countdown to the next episode,
  *                                        up to 4 automatic episodes after the one the kid chose.
  *
- * Parent mode (hold OK for 3 seconds) switches all of this off and shows the plain site,
- * for logging in or anything else. Hold OK again to go back to kid mode.
+ * Parent mode (up up down down OK, caught by MainActivity) switches all of this off and shows
+ * the plain site, for logging in or anything else. The same sequence goes back to kid mode.
  */
 (function () {
   'use strict';
@@ -20,7 +20,7 @@
 
   var AUTO_LIMIT = 4;          // automatic episodes after the one the kid picked
   var COUNTDOWN_SEC = 5;       // seconds before the next episode starts by itself
-  var LONG_PRESS_MS = 3000;    // hold OK this long to toggle parent mode
+  var LONG_PRESS_MS = 3000;    // browser testing only (no app): hold Enter to toggle parent mode
   var SEEK_SEC = 10;
   var IMG_CACHE_DAYS = 7;
 
@@ -28,6 +28,7 @@
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
   function sess(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
   function native(fn, arg) { try { if (window.MKNative && window.MKNative[fn]) window.MKNative[fn](arg); } catch (e) {} }
+  function log(msg) { try { console.log('[MK] ' + msg); } catch (e) {} }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function shown(e) { return !!(e && e.getClientRects && e.getClientRects().length); }
   function onReady(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -57,7 +58,8 @@
     '#mk-root .mk-title{font-size:30px;font-weight:bold;padding:22px 44px 6px;color:#ffd54a}',
     '#mk-root .mk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding:18px 44px 80px}',
     '#mk-root .mk-tile{position:relative;border-radius:14px;overflow:hidden;background:#2d1650;border:5px solid transparent;transition:transform .12s ease}',
-    '#mk-root .mk-img{width:100%;aspect-ratio:16/9;background:#3f2172 center/cover no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:bold;padding:8px;box-sizing:border-box}',
+    '#mk-root .mk-img{position:relative;width:100%;height:0;padding-top:56.25%;background:#3f2172 center/cover no-repeat}',
+    '#mk-root .mk-img span{position:absolute;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:bold;padding:8px;box-sizing:border-box}',
     '#mk-root .mk-name{font-size:22px;padding:8px 12px 4px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
     '#mk-root .mk-sub{font-size:16px;opacity:.75;padding:0 12px 10px}',
     '#mk-root .mk-season{grid-column:1/-1;font-size:26px;font-weight:bold;color:#ffd54a;padding-top:12px}',
@@ -114,6 +116,7 @@
     if (nav.cur && nav.cur !== e) nav.cur.classList.remove('mk-focus');
     nav.cur = e;
     e.classList.add('mk-focus');
+    log('focus ' + ((e.querySelector && e.querySelector('.mk-name')) ? e.querySelector('.mk-name').textContent : e.textContent || '').trim().slice(0, 40));
     try { e.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' }); } catch (x) { e.scrollIntoView(); }
   }
   function move(dir) {
@@ -158,6 +161,7 @@
   // One entry point for all remote keys. In the app, MainActivity catches the keys before the
   // page does and calls this directly. In a normal browser (for testing) the DOM listeners below do it.
   function handleKey(k) {
+    log('key ' + k + ' kids=' + kids + ' layer=' + !!layerActive);
     if (!kids) return;
     if (layerActive && layerActive.key) { layerActive.key(k); return; }
     if (k === 'enter' || k === 'playpause') { if (handlers.enter) handlers.enter(); return; }
@@ -269,7 +273,7 @@
     var t = el('div', 'mk-tile');
     var pic = el('div', 'mk-img');
     if (img) pic.style.backgroundImage = 'url("' + img.replace(/"/g, '%22') + '")';
-    else pic.textContent = name;
+    else pic.appendChild(el('span', null, name));
     t.appendChild(pic);
     t.appendChild(el('div', 'mk-name', name));
     if (sub) t.appendChild(el('div', 'mk-sub', sub));
@@ -327,6 +331,7 @@
         grid.appendChild(t);
         return t;
       });
+      log('home tiles=' + tiles.length + ' withImage=' + tiles.filter(function (t) { return !!t.mkPic.style.backgroundImage; }).length);
       nav.items = function () { return tiles; };
       var lastSeries = store('mkLastSeries');
       var start = tiles[0];
@@ -369,7 +374,7 @@
           if (u) {
             u = new URL(u, location.href).href;
             store('mkImg:' + t.mkPath, JSON.stringify({ u: u, t: Date.now() }));
-            t.mkPic.textContent = '';
+            t.mkPic.innerHTML = '';
             t.mkPic.style.backgroundImage = 'url("' + u.replace(/"/g, '%22') + '")';
           }
         })
@@ -436,6 +441,7 @@
         grid.appendChild(t);
         tiles.push(t);
       });
+      log('series tiles=' + tiles.length + ' withImage=' + eps.filter(function (e) { return !!e.img; }).length + ' seasons=' + hasSeasons);
       nav.items = function () { return tiles; };
       // Start on the episode after the last one watched.
       var start = tiles[0];
@@ -612,9 +618,10 @@
 
   // ---------- start ----------
   onReady(function () {
+    log('ready type=' + type + ' forcedMode=' + forcedMode + ' loggedIn=' + loggedIn() + ' width=' + window.innerWidth + 'x' + window.innerHeight + ' dpr=' + window.devicePixelRatio);
     if (!kids) {
       html.classList.remove('mk-boot');
-      parentBanner('מצב הורים. החזקת OK שלוש שניות מחזירה למצב ילדים');
+      parentBanner('מצב הורים. כדי לחזור למצב ילדים: למעלה, למעלה, למטה, למטה, OK');
       return;
     }
     if ((type === 'home' || type === 'series') && forcedMode !== 'kids' && !loggedIn()) {
