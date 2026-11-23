@@ -44,5 +44,5 @@ key 19; key 19; key 20; key 20; key 23
 shot 09-parent-mode 15
 
 adb logcat -d > shots/logcat-full.txt
-grep -E "\[MK\]|AndroidRuntime|FATAL" shots/logcat-full.txt > shots/logcat-mk.txt || true
+grep -E " MKTV|FATAL EXCEPTION|il.tzion" shots/logcat-full.txt > shots/logcat-mk.txt || true
 cat shots/logcat-mk.txt

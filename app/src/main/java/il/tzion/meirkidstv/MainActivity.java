@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -36,6 +38,7 @@ import java.util.Collections;
  */
 public class MainActivity extends Activity {
 
+    private static final String TAG = "MKTV";
     private static final String HOME_URL = "https://meirkids.co.il/";
     private static final String ERROR_URL = "file:///android_asset/offline.html";
     // A desktop user agent keeps the site on the same layout that inject.js was written against.
@@ -123,11 +126,13 @@ public class MainActivity extends Activity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 kidMode = false; // the new page will switch it back on when it is ready
+                Log.i(TAG, "page started " + url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                Log.i(TAG, "page finished " + url + " docStartScript=" + documentStartScriptInstalled);
                 // Fallback for older WebView versions; inject.js guards against running twice.
                 if (!documentStartScriptInstalled && url != null && url.contains("meirkids.co.il")) {
                     view.evaluateJavascript(injectJs, null);
@@ -138,12 +143,19 @@ public class MainActivity extends Activity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
+                    Log.w(TAG, "load error " + request.getUrl() + " " + error.getDescription());
                     view.loadUrl(ERROR_URL);
                 }
             }
         });
 
         chromeClient = new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage m) {
+                Log.i(TAG, "console " + m.message());
+                return true;
+            }
+
             @Override
             public Bitmap getDefaultVideoPoster() {
                 // Removes the grey "play" placeholder Android draws before a video starts.
@@ -218,6 +230,7 @@ public class MainActivity extends Activity {
 
         String name = remoteKey(code);
         if (name == null) return super.dispatchKeyEvent(event);
+        if (action == KeyEvent.ACTION_DOWN) Log.i(TAG, "key " + name + " kidMode=" + kidMode);
 
         // Parent mode switch: up up down down, then OK, within 4 seconds. Works in both modes.
         if (name.equals("enter")) {

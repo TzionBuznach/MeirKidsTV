@@ -79,3 +79,20 @@ jobs:
         with:
           name: tv-test-${{ github.run_number }}
           path: shots/
+
+      # Also keep the screenshots on a side branch, easy to look at from anywhere.
+      - name: Publish screenshots to the test-results branch
+        if: always()
+        run: |
+          rm -f shots/logcat-full.txt.gz
+          gzip -k shots/logcat-full.txt || true
+          rm -f shots/logcat-full.txt
+          mkdir -p /tmp/results && cp -r shots/. /tmp/results/
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git fetch origin test-results:test-results 2>/dev/null || true
+          if git show-ref --quiet refs/heads/test-results; then git checkout test-results; else git checkout --orphan test-results; git rm -rf . >/dev/null; fi
+          rm -rf latest && mkdir -p latest && cp -r /tmp/results/. latest/
+          git add latest
+          git commit -m "TV test results, build ${{ github.run_number }}" || true
+          git push origin test-results
