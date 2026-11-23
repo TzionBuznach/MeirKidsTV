@@ -244,7 +244,10 @@ public class MainActivity extends Activity {
             return;
         }
         String url = webView.getUrl();
-        if (url != null && url.startsWith("file:")) {
+        String host = url == null ? "" : Uri.parse(url).getHost();
+        if (url != null && (url.startsWith("file:") || !"meirkids.co.il".equals(host))) {
+            // Offline page, or the login site (join.meirkids.co.il): Back goes to the channel home,
+            // which also re-checks the login and switches to kid mode once logged in.
             webView.loadUrl(HOME_URL);
             return;
         }
