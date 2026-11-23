@@ -339,12 +339,14 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         CookieManager.getInstance().flush();
-        webView.onPause(); // stops the episode when the kid leaves the app
+        webView.onPause();      // stops the episode when the kid leaves the app
+        webView.pauseTimers();  // and stops all page scripts and timers until the app is back
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        webView.resumeTimers();
         webView.onResume();
     }
 
