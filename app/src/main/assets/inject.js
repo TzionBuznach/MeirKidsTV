@@ -32,6 +32,12 @@
   function log(msg) { if (!window.__mkDebug) return; try { console.log('[MK] ' + msg); } catch (e) {} }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function shown(e) { return !!(e && e.getClientRects && e.getClientRects().length); }
+  // Every move to another screen shows "loading" at once, so the screen is never just empty.
+  function go(url) {
+    document.documentElement.classList.add('mk-loading');
+    location.href = url;
+  }
+  window.addEventListener('pageshow', function () { document.documentElement.classList.remove('mk-loading'); });
   function onReady(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
   function decodePath(p) { try { return decodeURIComponent(p); } catch (e) { return p; } }
   function pathOf(href) { try { return decodePath(new URL(href, location.href).pathname); } catch (e) { return ''; } }
@@ -84,7 +90,10 @@
     '#mk-root .mk-login p{font-size:24px;line-height:1.5;opacity:.9;margin:0 0 30px}',
     '#mk-root .mk-login .mk-btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 36px;border-radius:14px;background:#5b2a9e;border:5px solid transparent}',
     '#mk-banner{position:fixed;bottom:0;left:0;right:0;z-index:2147483200;background:#c0392b;color:#fff;font:bold 20px Arial,sans-serif;padding:10px 20px;text-align:center;direction:rtl}',
-    '.cc-window,.cc-banner{display:none!important}'
+    '.cc-window,.cc-banner{display:none!important}',
+    'html.mk-boot::before,html.mk-loading::before{content:"";position:fixed;left:50%;top:44%;width:72px;height:72px;margin:-36px 0 0 -36px;box-sizing:border-box;border:8px solid rgba(255,213,74,.25);border-top-color:#ffd54a;border-radius:50%;animation:mk-spin .9s linear infinite;z-index:2147483647}',
+    'html.mk-boot::after,html.mk-loading::after{content:"טוען...";position:fixed;left:0;right:0;top:calc(44% + 56px);text-align:center;color:#fff;font:bold 30px Arial,Helvetica,sans-serif;direction:rtl;z-index:2147483647}',
+    '@keyframes mk-spin{to{transform:rotate(360deg)}}'
   ].join('\n');
 
   function addStyle() {
@@ -212,8 +221,8 @@
     if (!kids) return 'none';
     if (layerActive && layerActive.back) { return layerActive.back() === 'exit' ? 'exit' : 'handled'; }
     if (type === 'home') return 'exit';
-    if (type === 'episode') { location.href = seriesUrl; return 'handled'; }
-    location.href = '/';
+    if (type === 'episode') { go(seriesUrl); return 'handled'; }
+    go('/');
     return 'handled';
   };
 
@@ -278,7 +287,7 @@
       key: function (k) {
         if (k === 'left' || k === 'right' || k === 'up' || k === 'down') { focusBtn(cur === btnLogin ? btnGo : btnLogin); return; }
         if (k !== 'enter') return;
-        if (cur === btnLogin) { location.href = LOGIN_URL; return; }
+        if (cur === btnLogin) { go(LOGIN_URL); return; }
         sess('mkSkipLogin', '1');
         location.reload();
       },
@@ -316,21 +325,49 @@
   }
 
   // ---------- image helpers ----------
+  // Pictures. Lazy-loading sites put a placeholder in "src" and the real picture in a data-
+  // attribute until the picture scrolls into view. Our screen hides the site, so its pictures
+  // never scroll into view: read the real address and skip placeholders.
+  var PLACEHOLDER = /placeholder|loading|blank|spacer|transparent|lazy|no-?image|default[-_]?(img|image|thumb)/i;
+  function goodUrl(u) {
+    if (!u) return '';
+    u = String(u).trim();
+    if (!u || /^data:/.test(u) || PLACEHOLDER.test(u)) return '';
+    try { return new URL(u, location.href).href; } catch (e) { return ''; }
+  }
+  function firstOfSrcset(v) { return v ? v.split(',')[0].trim().split(' ')[0] : ''; }
+  function imgUrl(im) {
+    var c = [im.getAttribute('data-src'), im.getAttribute('data-lazy-src'), im.getAttribute('data-original'),
+      im.getAttribute('data-lazy'), im.getAttribute('data-url'), firstOfSrcset(im.getAttribute('data-srcset')),
+      firstOfSrcset(im.getAttribute('srcset')), im.getAttribute('src'), im.currentSrc];
+    for (var i = 0; i < c.length; i++) { var u = goodUrl(c[i]); if (u) return u; }
+    return '';
+  }
   function imageIn(node) {
     if (!node) return '';
-    var im = node.querySelector('img');
-    if (im) {
-      var src = im.getAttribute('data-src') || im.getAttribute('data-original') || im.getAttribute('data-lazy-src') || im.currentSrc || im.getAttribute('src') || '';
-      if (!src && im.getAttribute('srcset')) src = im.getAttribute('srcset').split(',')[0].trim().split(' ')[0];
-      if (src && !/^data:/.test(src)) return new URL(src, location.href).href;
-    }
+    var imgs = node.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) { var u = imgUrl(imgs[i]); if (u) return u; }
     var all = [node].concat(Array.prototype.slice.call(node.querySelectorAll('*')));
-    for (var i = 0; i < all.length; i++) {
-      var bg = (all[i].style && all[i].style.backgroundImage) || all[i].getAttribute('data-bg') || '';
-      var m = bg.match(/url\(["']?(.*?)["']?\)/) || (bg && !/url\(/.test(bg) ? [0, bg] : null);
-      if (m && m[1]) return new URL(m[1], location.href).href;
+    for (var j = 0; j < all.length; j++) {
+      var e = all[j];
+      var bg = (e.style && e.style.backgroundImage) || e.getAttribute('data-bg') || e.getAttribute('data-background') || e.getAttribute('data-bg-src') || '';
+      var m = bg.match(/url\(["']?(.*?)["']?\)/);
+      var u2 = goodUrl(m ? m[1] : (/url\(/.test(bg) ? '' : bg));
+      if (u2) return u2;
     }
     return '';
+  }
+
+  function cardOf(a, path) {
+    var c = a.parentElement;
+    for (var up = 0; up < 2 && c && c !== document.body; up++, c = c.parentElement) {
+      var links = c.querySelectorAll('a[href]');
+      var own = true;
+      for (var i = 0; i < links.length; i++) { if (pathOf(links[i].getAttribute('href')) !== path) { own = false; break; } }
+      if (!own) return null;
+      if (c.querySelector('img') || /url\(/.test(c.getAttribute('style') || '')) return c;
+    }
+    return null;
   }
 
   function makeTile(name, sub, img, href) {
@@ -401,18 +438,20 @@
   // ---------- HOME: grid of series ----------
   function initHome() {
     waitFor(function () {
-      var seen = {}, list = [];
+      var byPath = {}, list = [];
       var anchors = document.querySelectorAll('a[href]');
       for (var i = 0; i < anchors.length; i++) {
         var a = anchors[i];
         var p = pathOf(a.getAttribute('href'));
         var s = p.split('/').filter(Boolean);
-        if (s.length !== 2 || s[1] !== 'v' || seen[p]) continue;
-        seen[p] = 1;
-        var imgEl = a.querySelector('img');
-        var name = (a.getAttribute('title') || (imgEl && imgEl.getAttribute('alt')) || a.textContent || '').trim().replace(/\s+/g, ' ');
-        if (!name || name.length > 40) name = s[0].replace(/-/g, ' ');
-        list.push({ path: p, href: new URL(a.getAttribute('href'), location.href).href, name: name, img: imageIn(a) });
+        if (s.length !== 2 || s[1] !== 'v') continue;
+        if (!byPath[p]) {
+          // The address is the series name, without the like counters and "..." the site adds.
+          byPath[p] = { path: p, href: new URL(a.getAttribute('href'), location.href).href, name: s[0].replace(/-/g, ' '), img: '' };
+          list.push(byPath[p]);
+        }
+        var item = byPath[p];
+        if (!item.img) item.img = imageIn(a) || imageIn(cardOf(a, p));
       }
       return list.length >= 3 ? list : null;
     }, 6000, function (list) {
@@ -434,7 +473,7 @@
       handlers.enter = function () {
         if (!nav.cur) return;
         store('mkLastSeries', nav.cur.mkPath);
-        location.href = nav.cur.getAttribute('data-href');
+        go(nav.cur.getAttribute('data-href'));
       };
       loadSeriesImages(tiles);
     });
@@ -548,7 +587,7 @@
       handlers.enter = function () {
         if (!nav.cur) return;
         sess('mkAuto', '0'); // the kid chose this one: the automatic-episode counter starts over
-        location.href = nav.cur.getAttribute('data-href');
+        go(nav.cur.getAttribute('data-href'));
       };
     });
   }
@@ -568,7 +607,7 @@
     var progress = 0;
     var startedAt = Date.now();
 
-    html.classList.add('mk-player');
+    html.classList.add('mk-player', 'mk-loading');
     html.classList.remove('mk-boot');
 
     // The site uses more than one player: Vimeo for most series, JW Player for some,
@@ -637,6 +676,7 @@
       };
     }
 
+    setTimeout(function () { html.classList.remove('mk-loading'); }, 20000);
     (function detect() {
       if (ended) return;
       var a = null;
@@ -648,18 +688,20 @@
 
     // Never leave a kid on a black screen.
     function noPlayer() {
+      html.classList.remove('mk-loading');
       var card = el('div', 'mk-card');
       card.appendChild(el('div', 'mk-big', 'הפרק לא נטען'));
       card.appendChild(el('div', 'mk-big', 'חוזרים לרשימת הפרקים...'));
       showLayer(card);
-      var go = function () { location.href = seriesUrl; };
-      layerActive = { key: function (k) { if (k === 'enter') go(); }, back: go };
-      setTimeout(go, 4000);
+      var back = function () { go(seriesUrl); };
+      layerActive = { key: function (k) { if (k === 'enter') back(); }, back: back };
+      setTimeout(back, 4000);
     }
 
     function wirePlayer(p) {
       p.fsEl.classList.add('mk-fs');
-      p.on('play', function () { native('setKeepScreenOn', true); showLayer(null); });
+      p.on('play', function () { html.classList.remove('mk-loading'); native('setKeepScreenOn', true); showLayer(null); });
+      p.on('timeupdate', function () { html.classList.remove('mk-loading'); });
       p.on('pause', function () { native('setKeepScreenOn', false); });
       p.on('ended', function () { onEnded(); });
       p.on('timeupdate', function (d) {
@@ -668,7 +710,7 @@
       });
       var started = null;
       try { started = p.play(); } catch (e) { started = null; }
-      if (started && started.then) started.then(function () { log('play ok'); }, function (e) { log('play failed ' + e); toast('לחצו OK כדי להתחיל', 4000); });
+      if (started && started.then) started.then(function () { log('play ok'); }, function (e) { log('play failed ' + e); html.classList.remove('mk-loading'); toast('לחצו OK כדי להתחיל', 4000); });
       if (p.state) setTimeout(function () { log('player state after 8s: ' + p.state()); }, 8000);
 
       if (p.watchRemoval) {
@@ -705,6 +747,7 @@
     function onEnded() {
       if (ended) return;
       ended = true;
+      html.classList.remove('mk-loading');
       log('episode ended');
       native('setKeepScreenOn', false);
       markWatched(seriesSlug, epId);
@@ -719,9 +762,9 @@
           card.appendChild(el('div', 'mk-big', nextBtn ? 'זהו להפעם!' : 'זה היה הפרק האחרון'));
           card.appendChild(el('div', 'mk-big', 'חוזרים לרשימת הפרקים...'));
           showLayer(card);
-          var go = function () { location.href = seriesUrl; };
-          layerActive = { key: function (k) { if (k === 'enter') go(); }, back: go };
-          setTimeout(go, 3500);
+          var back = function () { go(seriesUrl); };
+          layerActive = { key: function (k) { if (k === 'enter') back(); }, back: back };
+          setTimeout(back, 3500);
           return;
         }
         var left = COUNTDOWN_SEC;
@@ -740,12 +783,13 @@
             sess('mkAuto', String(auto + 1));
             layerActive = null;
             log('auto next, count=' + (auto + 1));
+            html.classList.add('mk-loading');
             nextBtn.click();
             // If the click did not navigate, go back to the list rather than sit on a black screen.
-            setTimeout(function () { location.href = seriesUrl; }, 6000);
+            setTimeout(function () { go(seriesUrl); }, 6000);
           }
         }, 1000);
-        var toList = function () { clearInterval(timer); location.href = seriesUrl; };
+        var toList = function () { clearInterval(timer); go(seriesUrl); };
         layerActive = { key: function (k) { if (k === 'enter') toList(); }, back: toList };
       });
     }
