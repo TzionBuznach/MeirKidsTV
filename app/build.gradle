@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+def runNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
+
+android {
+    namespace 'il.tzion.meirkidstv'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'il.tzion.meirkidstv'
+        minSdk 24
+        targetSdk 34
+        versionCode runNumber
+        versionName "0.1.${runNumber}"
+    }
+
+    signingConfigs {
+        shared {
+            // Fixed key so every new build installs as an update (keeps the login).
+            storeFile file('../signing/meirkids.keystore')
+            storePassword 'android'
+            keyAlias 'meirkids'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.shared
+        }
+        debug {
+            signingConfig signingConfigs.shared
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+}

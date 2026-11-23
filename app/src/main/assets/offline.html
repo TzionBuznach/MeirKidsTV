@@ -1,0 +1,13 @@
+<!doctype html>
+<html dir="rtl" lang="he"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>
+html,body{margin:0;height:100%;background:#1b0b2e;color:#fff;font-family:Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center;text-align:center}
+h1{font-size:40px;margin:0 0 16px}p{font-size:26px;opacity:.85;margin:0 0 30px}
+.btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 36px;border-radius:14px;background:#5b2a9e;border:5px solid #ffd54a}
+</style></head>
+<body><div><h1>אין חיבור לאינטרנט</h1><p>בודקים שהראוטר דולק ומנסים שוב</p><div class="btn">לחצו OK לנסות שוב</div></div>
+<script>
+document.addEventListener('keyup',function(e){if(e.key==='Enter'||e.keyCode===13){if(window.MKNative)MKNative.reloadHome();else location.href='https://meirkids.co.il/';}});
+setTimeout(function(){if(navigator.onLine&&window.MKNative)MKNative.reloadHome();},15000);
+</script></body></html>
