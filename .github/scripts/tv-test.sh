@@ -58,20 +58,39 @@ cat shots/logcat-mk.txt
 
 # ---------------------------------------------------------------------------
 # 4) Resource check: does the app use CPU or network when it is not on screen?
-# CPU: the app's own process time (/proc/<pid>/stat, in 1/100 s).
-# Network: whole-device bytes (/proc/net/dev), compared with a baseline where the app is stopped.
+# CPU: the app's own process, and separately the WebView page renderers (a separate process).
+# Network: per app (Android's own per-UID traffic counters), so other apps' traffic is not blamed on us.
 R=shots/resource-report.txt
+APPUID=$(adb shell pm list packages -U $PKG | tr -d '\r' | sed -n 's/.*uid:\([0-9]*\).*/\1/p' | head -1)
+adb shell pm list packages -U | tr -d '\r' | sed -n 's/package:\(.*\) uid:\([0-9,]*\).*/\2 \1/p' > /tmp/uids.txt
 cpu() { local pid; pid=$(adb shell pidof $PKG | tr -d '\r'); if [ -z "$pid" ]; then echo "-"; else adb shell cat /proc/$pid/stat | tr -d '\r' | awk '{print $14+$15}'; fi; }
-net() { adb shell cat /proc/net/dev | tr -d '\r' | awk -F'[: ]+' 'NR>2 && $2!="lo" {rx+=$3; tx+=$11} END {print rx+tx}'; }
-phase() { # name seconds
-  local c0 n0 c1 n1
-  c0=$(cpu); n0=$(net); sleep "$2"; c1=$(cpu); n1=$(net)
-  local alive="yes"; [ -z "$(adb shell pidof $PKG | tr -d '\r')" ] && alive="no (process ended)"
-  local dc="-"; [ "$c0" != "-" ] && [ "$c1" != "-" ] && dc=$(awk -v a=$c0 -v b=$c1 'BEGIN{printf "%.2f s", (b-a)/100}')
-  local dn=$(( (n1 - n0) / 1024 ))
-  echo "$1 | ${2}s | app CPU: $dc | device network: ${dn} KB | app process alive: $alive" | tee -a $R
+rcpu() { for p in $(adb shell ps -A -o PID,NAME | tr -d '\r' | awk '/sandboxed_process|privileged_process/ {print $1}'); do adb shell cat /proc/$p/stat 2>/dev/null; done | tr -d '\r' | awk '{s+=$14+$15} END {print s+0}'; }
+uidnet() { # prints "uid bytes" for every app, after forcing Android to update its counters
+  adb shell dumpsys netstats --poll >/dev/null 2>&1
+  adb shell dumpsys netstats detail | tr -d '\r' | awk '
+    /uid=-?[0-9]+ set=[A-Z_]+ tag=0x0/ { match($0, /uid=-?[0-9]+/); cur=substr($0, RSTART+4, RLENGTH-4); next }
+    /uid=-?[0-9]+ set=/ { cur=""; next }
+    /^ *(Dev|Xt|UID|UID tag) stats/ { cur="" }
+    / rb=/ && cur!="" { for (i=1;i<=NF;i++) { if ($i ~ /^rb=/ || $i ~ /^tb=/) { split($i, a, "="); t[cur]+=a[2] } } }
+    END { for (u in t) print u, t[u] }'
 }
-echo "phase | duration | app CPU time used | device network | app alive" > $R
+devnet() { adb shell cat /proc/net/dev | tr -d '\r' | awk -F'[: ]+' 'NR>2 && $2!="lo" {rx+=$3; tx+=$11} END {print rx+tx}'; }
+phase() { # name seconds
+  local c0 r0 n0 c1 r1 n1
+  c0=$(cpu); r0=$(rcpu); n0=$(devnet); uidnet > /tmp/u0.txt
+  sleep "$2"
+  c1=$(cpu); r1=$(rcpu); n1=$(devnet); uidnet > /tmp/u1.txt
+  local alive="yes"; [ -z "$(adb shell pidof $PKG | tr -d '\r')" ] && alive="no"
+  local dc="-"; [ "$c0" != "-" ] && [ "$c1" != "-" ] && dc=$(awk -v a=$c0 -v b=$c1 'BEGIN{printf "%.2f s", (b-a)/100}')
+  local dr=$(awk -v a=$r0 -v b=$r1 'BEGIN{d=(b-a)/100; if (d<0) d=0; printf "%.2f s", d}')
+  local app0=$(awk -v u=$APPUID '$1==u{print $2}' /tmp/u0.txt); local app1=$(awk -v u=$APPUID '$1==u{print $2}' /tmp/u1.txt)
+  local dapp=$(( (${app1:-0} - ${app0:-0}) / 1024 ))
+  local ddev=$(( (n1 - n0) / 1024 ))
+  local top=$(join <(sort /tmp/u0.txt) <(sort /tmp/u1.txt) -a2 -e0 -o 0,1.2,2.2 | awk '{d=$3-$2; if (d>0) print d, $1}' | sort -rn | head -3 | while read d u; do n=$(awk -v u=$u '$1==u{print $2; exit}' /tmp/uids.txt); echo -n "${n:-uid $u}=$((d/1024))KB "; done)
+  echo "$1 | ${2}s | app CPU $dc | page renderer CPU $dr | app network ${dapp} KB | whole device ${ddev} KB | alive: $alive | top network users: ${top:-none}" | tee -a $R
+}
+echo "app uid: $APPUID" > $R
+echo "phase | duration | app CPU | renderer CPU | app network | whole device | alive | top users" >> $R
 
 adb shell am force-stop $PKG
 adb shell input keyevent 224; sleep 2
@@ -92,4 +111,6 @@ phase "D. baseline: screen off, app stopped" 120
 adb shell input keyevent 224
 echo "== wake locks held by the app (should be none):" | tee -a $R
 adb shell dumpsys power | tr -d '\r' | grep -i "$PKG" | tee -a $R || true
+echo "== netstats sample (format check):" >> $R
+adb shell dumpsys netstats detail | tr -d '\r' | grep -m5 -A2 "uid=$APPUID set=DEFAULT tag=0x0" >> $R || true
 cat $R
