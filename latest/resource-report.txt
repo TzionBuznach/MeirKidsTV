@@ -1,6 +1,8 @@
-phase | duration | app CPU time used | device network | app alive
-A. app open on the home grid (idle) | 60s | app CPU: 0.04 s | device network: 16 KB | app process alive: yes
-B. app in the background | 120s | app CPU: 0.00 s | device network: 27 KB | app process alive: yes
-C. screen off, app was last used | 120s | app CPU: 0.01 s | device network: 78523 KB | app process alive: yes
-D. baseline: screen off, app stopped | 120s | app CPU: - | device network: 22 KB | app process alive: no (process ended)
+app uid: 10076
+phase | duration | app CPU | renderer CPU | app network | whole device | alive | top users
+A. app open on the home grid (idle) | 60s | app CPU 0.02 s | page renderer CPU 0.41 s | app network 0 KB | whole device 16 KB | alive: yes | top network users: none
+B. app in the background | 120s | app CPU 0.02 s | page renderer CPU 0.00 s | app network 0 KB | whole device 27 KB | alive: yes | top network users: none
+C. screen off, app was last used | 120s | app CPU 0.00 s | page renderer CPU 0.00 s | app network 0 KB | whole device 78502 KB | alive: yes | top network users: none
+D. baseline: screen off, app stopped | 120s | app CPU - | page renderer CPU 0.00 s | app network 0 KB | whole device 21 KB | alive: no | top network users: none
 == wake locks held by the app (should be none):
+== netstats sample (format check):
