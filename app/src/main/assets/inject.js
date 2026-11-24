@@ -83,18 +83,18 @@
     '#mk-layer .mk-count{font-size:96px;font-weight:bold;color:#ffd54a;line-height:1.1;margin:6px 0 20px}',
     '#mk-layer .mk-btn{display:inline-block;font-size:28px;font-weight:bold;padding:16px 34px;border-radius:14px;background:#5b2a9e;border:5px solid transparent}',
     '#mk-layer .mk-pause{font-size:120px;background:rgba(0,0,0,.45);border-radius:50%;width:200px;height:200px;display:flex;align-items:center;justify-content:center}',
-    '#mk-bar{position:fixed;left:0;right:0;bottom:0;z-index:2147483150;display:none;padding:22px 48px 26px;background:linear-gradient(to top,rgba(10,4,22,.95),rgba(10,4,22,.75) 70%,rgba(10,4,22,0));color:#fff;font-family:Arial,Helvetica,sans-serif}',
-    '#mk-bar.mk-on{display:block}',
-    '#mk-bar .mk-bar-title{direction:rtl;text-align:right;font-size:26px;font-weight:bold;margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-    '#mk-bar .mk-bar-time{direction:ltr;display:flex;align-items:center;gap:16px;font-size:20px;margin-bottom:16px}',
-    '#mk-bar .mk-track{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.25);overflow:hidden}',
+    '#mk-bar{position:fixed;left:0;right:0;bottom:0;z-index:2147483150;display:block;transform:translateY(110%);opacity:0;transition:transform .35s ease,opacity .35s ease;padding:18px 48px 20px;background:linear-gradient(to top,rgba(10,4,22,.95),rgba(10,4,22,.75) 70%,rgba(10,4,22,0));color:#fff;font-family:Arial,Helvetica,sans-serif}',
+    '#mk-bar.mk-on{transform:translateY(0);opacity:1}',
+    '#mk-bar .mk-bar-title{direction:rtl;text-align:right;font-size:22px;font-weight:bold;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+    '#mk-bar .mk-bar-time{direction:ltr;display:flex;align-items:center;gap:14px;font-size:17px;margin-bottom:12px}',
+    '#mk-bar .mk-track{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.25);overflow:hidden}',
     '#mk-bar .mk-fill{height:100%;width:0;background:#ffd54a}',
-    '#mk-bar .mk-bar-btns{direction:ltr;display:flex;justify-content:center;gap:18px}',
-    '#mk-bar .mk-bbtn{min-width:120px;text-align:center;padding:10px 12px 8px;border-radius:14px;background:rgba(91,42,158,.85);border:4px solid transparent}',
-    '#mk-bar .mk-bicon{font-size:34px;line-height:1.1}',
-    '#mk-bar .mk-blabel{font-size:17px;direction:rtl;margin-top:2px}',
+    '#mk-bar .mk-bar-btns{direction:ltr;display:flex;justify-content:center;gap:12px}',
+    '#mk-bar .mk-bbtn{min-width:78px;text-align:center;padding:6px 8px 5px;border-radius:10px;background:rgba(91,42,158,.85);border:3px solid transparent}',
+    '#mk-bar .mk-bicon{font-size:22px;line-height:1.15}',
+    '#mk-bar .mk-blabel{font-size:13px;direction:rtl;margin-top:1px}',
     '#mk-bar .mk-bbtn.mk-off{opacity:.3}',
-    '#mk-bar .mk-bbtn.mk-focus{border-color:#ffd54a;transform:scale(1.08)}',
+    '#mk-bar .mk-bbtn.mk-focus{border-color:#ffd54a;transform:scale(1.06)}',
     'html.mk-player #mk-bar,html.mk-player #mk-bar *{visibility:visible!important}',
     '#mk-toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:2147483200;background:rgba(0,0,0,.85);color:#fff;font:bold 24px Arial,sans-serif;padding:14px 28px;border-radius:12px;direction:rtl;display:none;visibility:visible!important}',
     '#mk-root.mk-center{display:flex;align-items:center;justify-content:center}',
@@ -837,10 +837,10 @@
         return b;
       }
       // Left to right like the timeline: back in time on the left, forward on the right.
-      var bPrev = button('⏮', 'פרק קודם', function () { toEpisode(-1); });
+      var bPrev = button('⏮', 'מההתחלה', function () { p.seekBy(-1e9); p.play(); refresh(); });
       var bBack = button('⏪', '10 שניות', function () { p.seekBy(-SEEK_SEC); refresh(); });
       var bPlay = button('❚❚', 'עצירה', function () {
-        p.paused().then(function (isPaused) { if (isPaused) { p.play(); scheduleHide(); } else { p.pause(); } });
+        p.paused().then(function (isPaused) { if (isPaused) { p.play(); hide(); } else { p.pause(); } });
       });
       var bFwd = button('⏩', '10 שניות', function () { p.seekBy(SEEK_SEC); refresh(); });
       var bNext = button('⏭', 'פרק הבא', function () { toEpisode(1); });
@@ -855,7 +855,6 @@
         focusIdx = i;
       }
       function enabledNeighbours() {
-        bPrev.classList.toggle('mk-off', !neighbour(-1));
         bNext.classList.toggle('mk-off', !neighbour(1));
       }
       function refreshTitle() {
